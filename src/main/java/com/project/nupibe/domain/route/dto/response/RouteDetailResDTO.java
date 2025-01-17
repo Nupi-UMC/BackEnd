@@ -4,7 +4,7 @@ import lombok.Builder;
 
 import java.util.List;
 
-public class RouteResDTO {
+public class RouteDetailResDTO {
 
     @Builder
     public record RouteDetailResponse(

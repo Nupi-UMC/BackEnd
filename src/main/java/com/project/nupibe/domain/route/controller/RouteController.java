@@ -1,6 +1,7 @@
 package com.project.nupibe.domain.route.controller;
 
-import com.project.nupibe.domain.route.dto.response.RouteResDTO;
+import com.project.nupibe.domain.route.dto.response.RouteDetailResDTO;
+import com.project.nupibe.domain.route.dto.response.RoutePlacesResDTO;
 import com.project.nupibe.domain.route.service.query.RouteQueryService;
 import com.project.nupibe.global.apiPayload.CustomResponse;
 import io.swagger.v3.oas.annotations.Operation;
@@ -21,8 +22,15 @@ public class RouteController {
 
     @GetMapping("/{routeId}")
     @Operation(summary = "경로 상세 조회 API", description = "PathVariable로 보낸 id의 경로를 상세 조회 합니다.")
-    public CustomResponse<RouteResDTO.RouteDetailResponse> getRouteDetail(@PathVariable Long routeId) {
-        RouteResDTO.RouteDetailResponse response = routeQueryService.getRouteDetail(routeId);
+    public CustomResponse<RouteDetailResDTO.RouteDetailResponse> getRouteDetail(@PathVariable Long routeId) {
+        RouteDetailResDTO.RouteDetailResponse response = routeQueryService.getRouteDetail(routeId);
+        return CustomResponse.onSuccess(response);
+    }
+
+    @GetMapping("/{routeId}/stores")
+    @Operation(summary = "경로 내 장소 목록 조회 API", description = "PathVariable로 보낸 id의 경로 내 장소들을 조회 합니다.")
+    public CustomResponse<RoutePlacesResDTO.RoutePlacesResponse> getRoutePlaces(@PathVariable Long routeId) {
+        RoutePlacesResDTO.RoutePlacesResponse response = routeQueryService.getRoutePlaces(routeId);
         return CustomResponse.onSuccess(response);
     }
 }
