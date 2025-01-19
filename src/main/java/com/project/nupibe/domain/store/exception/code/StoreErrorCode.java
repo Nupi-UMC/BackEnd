@@ -10,7 +10,11 @@ public enum StoreErrorCode implements BaseErrorCode {
     NOT_FOUND(HttpStatus.NOT_FOUND,
             "STORE404",
                     "가게를 찾을 수 없습니다."),
-    ;
+    ALREADY_EXISTS(HttpStatus.CONFLICT,
+            "STORE409",
+            "이미 가게가 존재합니다.");
+
+
 
     private final HttpStatus status;
     private final String code;
