@@ -38,7 +38,7 @@ public class RouteConverter {
                         .location(place.location())
                         .category(place.category())
                         .order(place.orderIndex())
-                        .distance(place.distance())
+                        .distance(place.distance() != null ? place.distance() : "첫번째장소") // distance가 null이면 "첫번째장소"로 처리
                         .build())
                 .collect(Collectors.toList());
 

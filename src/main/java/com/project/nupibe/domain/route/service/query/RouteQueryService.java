@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -33,25 +34,52 @@ public class RouteQueryService {
     }
 
     public RoutePlacesResDTO.RoutePlacesResponse getRoutePlaces(Long routeId) {
+        // 1. 경로 조회
         Route route = routeRepository.findById(routeId)
                 .orElseThrow(() -> new RouteException(RouteErrorCode.ROUTE_NOT_FOUND));
 
-        List<RouteStoreDTO> places = storeRepository.findStoresWithCalculatedDistance(routeId);
+        // 2. 네이티브 쿼리 결과를 DTO로 매핑
+        List<Object[]> results = storeRepository.findStoresWithCalculatedDistance(routeId);
+        List<RouteStoreDTO> places = mapToRouteStoreDTO(results);
 
-        // 첫 번째 장소 처리
+        // 3. 첫 번째 장소의 distance를 null로 처리
         if (!places.isEmpty()) {
             RouteStoreDTO firstPlace = places.get(0);
-            places.set(0, RouteStoreDTO.builder()
-                    .storeId(firstPlace.storeId())
-                    .name(firstPlace.name())
-                    .location(firstPlace.location())
-                    .category(firstPlace.category())
-                    .orderIndex(firstPlace.orderIndex())
-                    .distance("첫번째장소")
-                    .image(firstPlace.image())
-                    .build());
+            places.set(0, firstPlace.withDistance("첫번째장소"));
         }
 
+        // 4. 결과 반환
         return RouteConverter.convertToRoutePlacesDTO(route, places);
+    }
+
+    // 네이티브 쿼리 결과를 RouteStoreDTO로 매핑하는 메서드(PostGIS는 네이티브 쿼리로 작동)
+    private List<RouteStoreDTO> mapToRouteStoreDTO(List<Object[]> results) {
+        return results.stream()
+                .map(result -> {
+                    Long storeId = ((Number) result[0]).longValue();
+                    String name = (String) result[1];
+                    String location = (String) result[2];
+                    String category = (String) result[3];
+                    Integer orderIndex = ((Number) result[4]).intValue();
+                    Double distance = result[5] != null ? ((Number) result[5]).doubleValue() / 1000.0 : null; // 킬로미터 변환
+                    String formattedDistance = formatDistance(distance); // 거리 포맷팅
+                    String image = (String) result[6];
+
+                    return RouteStoreDTO.builder()
+                            .storeId(storeId)
+                            .name(name)
+                            .location(location)
+                            .category(category)
+                            .orderIndex(orderIndex)
+                            .distance(formattedDistance)
+                            .image(image)
+                            .build();
+                })
+                .collect(Collectors.toList());
+    }
+
+    // 거리 포맷팅 메서드
+    private String formatDistance(Double distance) {
+        return distance != null ? String.format("%.1f Km", distance) : null;
     }
 }
