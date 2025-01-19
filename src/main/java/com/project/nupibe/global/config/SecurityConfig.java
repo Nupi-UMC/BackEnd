@@ -22,7 +22,6 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll() // Swagger 경로 허용
                         .requestMatchers("/api/auth/**").permitAll() // 인증 관련 API 허용
-                        .requestMatchers("/api/**").permitAll()
                         .anyRequest().authenticated() // 나머지 모든 요청은 인증 필요
                 )
                 .httpBasic(httpBasic -> httpBasic.disable()); // HTTP Basic 인증 비활성화
