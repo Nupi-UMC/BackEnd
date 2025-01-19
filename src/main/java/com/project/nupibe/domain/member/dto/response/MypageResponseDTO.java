@@ -1,4 +1,4 @@
-package com.project.nupibe.domain.dto.response;
+package com.project.nupibe.domain.member.dto.response;
 
 import lombok.Builder;
 @Builder
