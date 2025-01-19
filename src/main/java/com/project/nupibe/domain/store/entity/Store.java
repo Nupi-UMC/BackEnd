@@ -57,4 +57,8 @@ public class Store extends BaseEntity {
 
     @Column(name = "longitude", nullable = false)
     private float longitude;
+
+    public void setBookmarkNum(int i) {
+        this.bookmarkNum = i;
+    }
 }
