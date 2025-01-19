@@ -1,42 +1,34 @@
-package com.project.nupibe.domain.service;
+package com.project.nupibe.domain.store.service;
 
-import com.project.nupibe.domain.converter.StoreConverter;
-import com.project.nupibe.domain.dto.response.StoreDetailResponseDTO;
 import com.project.nupibe.domain.member.entity.Member;
 import com.project.nupibe.domain.member.entity.MemberStore;
-import com.project.nupibe.domain.repository.MemberStoreRepository;
-import com.project.nupibe.domain.repository.StoreRepository;
+import com.project.nupibe.domain.member.repository.MemberStoreRepository;
 import com.project.nupibe.domain.store.entity.Store;
+import com.project.nupibe.domain.store.exception.code.StoreErrorCode;
+import com.project.nupibe.domain.store.exception.handler.StoreException;
+import com.project.nupibe.domain.store.repository.StoreRepository;
 import com.project.nupibe.global.apiPayload.code.GeneralErrorCode;
 import com.project.nupibe.global.apiPayload.exception.handler.StoreHandler;
-import jakarta.persistence.PreUpdate;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
-public class StoreService {
+public class StoreCommandService {
     //Repository
     private final StoreRepository storeRepository;
     private final MemberStoreRepository memberStoreRepository;
 
-    public StoreDetailResponseDTO getStoreDetail(Long storeId) {
-        //Store 조회
-        Store store = storeRepository.findById(storeId)
-                .orElseThrow(() -> new StoreHandler(GeneralErrorCode.BAD_REQUEST_400)); //추후 errorcode 수정 예정
-        return StoreConverter.toStoreDetailResponseDTO(store);
-    }
+
     public void bookmarkStore(Long memberId, Long storeId) {
         boolean exists = memberStoreRepository.existsByMemberIdAndStoreId(memberId, storeId);
+        //존재하는지 확인
         if (exists) {
-            throw new StoreHandler(GeneralErrorCode.BAD_REQUEST_400); //추후 errorcode 수정 예정
+            throw new StoreException(StoreErrorCode.ALREADY_EXISTS);
         }
         //Store 조회
         Store store = storeRepository.findById(storeId)
-                .orElseThrow(() -> new StoreHandler(GeneralErrorCode.BAD_REQUEST_400)); //추후 errorcode 수정 예정
+                .orElseThrow(() -> new StoreException(StoreErrorCode.NOT_FOUND));
 
         //MemberStore 테이블에 데이터 저장
         MemberStore memberStore = MemberStore.builder()

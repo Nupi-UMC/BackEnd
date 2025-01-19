@@ -1,4 +1,4 @@
-package com.project.nupibe.domain.repository;
+package com.project.nupibe.domain.member.repository;
 
 import com.project.nupibe.domain.member.entity.MemberStore;
 import com.project.nupibe.domain.store.entity.Store;

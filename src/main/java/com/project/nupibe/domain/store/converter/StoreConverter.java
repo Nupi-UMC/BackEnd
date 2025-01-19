@@ -12,6 +12,18 @@ import java.util.stream.Collectors;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class StoreConverter {
     //entity -> previewDTO
+
+    public static StoreResponseDTO.StoreDetailResponseDTO toStoreDetailResponseDTO(Store store){
+        return StoreResponseDTO.StoreDetailResponseDTO.builder()
+                .id(store.getId())
+                .name(store.getName())
+                .content(store.getContent())
+                .image(store.getImage())
+                .category(store.getCategory())
+                .like_num(store.getLikeNum())
+                .bookmark_num(store.getBookmarkNum())
+                .build();
+    }
     public static StoreResponseDTO.StorePreviewDTO toStorePreviewDto(Store store){
         return StoreResponseDTO.StorePreviewDTO.builder()
                 .id(store.getId())
