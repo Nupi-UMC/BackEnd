@@ -6,11 +6,11 @@ import com.project.nupibe.domain.store.entity.Store;
 import com.project.nupibe.domain.store.exception.code.StoreErrorCode;
 import com.project.nupibe.domain.store.exception.handler.StoreException;
 import com.project.nupibe.domain.store.repository.StoreRepositroy;
+import com.project.nupibe.global.apiPayload.code.GeneralErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
-import org.springframework.data.domain.SliceImpl;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,6 +22,13 @@ import java.util.ArrayList;
 public class StoreQueryService {
     private final StoreRepositroy storeRepositroy;
     private final int RADIUS = 3000; //3km 반경에 있는 가게 조회
+
+    //단일 가게 조회(detail)
+    public StoreResponseDTO.StoreDetailResponseDTO getStoreDetail(Long storeId) {
+        Store store = storeRepositroy.findById(storeId)
+                .orElseThrow(() -> new StoreException(StoreErrorCode.NOT_FOUND));
+        return StoreConverter.toStoreDetailResponseDTO(store);
+    }
 
     //단일 가게 조회(preview)
     public StoreResponseDTO.StorePreviewDTO getStorePreview(Long storeId){

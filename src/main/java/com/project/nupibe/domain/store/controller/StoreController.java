@@ -1,6 +1,7 @@
 package com.project.nupibe.domain.store.controller;
 
 import com.project.nupibe.domain.store.dto.response.StoreResponseDTO;
+import com.project.nupibe.domain.store.service.StoreCommandService;
 import com.project.nupibe.domain.store.service.StoreQueryService;
 import com.project.nupibe.global.apiPayload.CustomResponse;
 import io.swagger.v3.oas.annotations.Operation;
@@ -8,6 +9,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @Slf4j
@@ -17,6 +19,22 @@ import org.springframework.web.bind.annotation.*;
 @Tag(name = "가게 API")
 public class StoreController {
     private final StoreQueryService storeQueryService;
+    private final StoreCommandService storeCommandService;
+
+    @GetMapping("{storeId}/detail")
+    @Operation(method = "GET", summary = "가게 단일 조회(detail) API", description = "가게 상세페이지 조회입니다.")
+    public CustomResponse<StoreResponseDTO.StoreDetailResponseDTO> getStoreDetail(@PathVariable("storeId") Long storeId){
+        StoreResponseDTO.StoreDetailResponseDTO responseDTO = storeQueryService.getStoreDetail(storeId);
+        return CustomResponse.onSuccess(responseDTO);
+    }
+
+
+    @PostMapping("{storeId}/bookmark")
+    @Operation(method = "POST", summary = "가게 북마크 API", description = "가게 북마크 버튼을 클릭시 작동하는 기능입니다..")
+    public ResponseEntity<String> bookmarkStore(@RequestParam Long memberId, @PathVariable("storeId") Long storeId) {
+        storeCommandService.bookmarkStore(memberId, storeId);
+        return ResponseEntity.ok("Store bookmarked successfully");
+    }
 
     @GetMapping("/{storeId}/preview")
     @Operation(method = "GET", summary = "가게 단일 조회(preview) API", description = "지도 마커 클릭 시 나오는 가게 단일 조회입니다.")
