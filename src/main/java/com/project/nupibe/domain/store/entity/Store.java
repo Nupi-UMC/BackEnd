@@ -3,6 +3,7 @@ package com.project.nupibe.domain.store.entity;
 import com.project.nupibe.global.entity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
+import org.locationtech.jts.geom.Point;
 
 @Entity
 @Getter
@@ -57,7 +58,8 @@ public class Store extends BaseEntity {
 
     @Column(name = "longitude", nullable = false)
     private float longitude;
-
+    @Column(columnDefinition = "geometry(Point, 4326)")
+    private Point coordinates; // PostGIS Point 타입
     public void setBookmarkNum(int i) {
         this.bookmarkNum = i;
     }

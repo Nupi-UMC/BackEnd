@@ -24,6 +24,12 @@ dependencies {
     // PostgreSql
     runtimeOnly 'org.postgresql:postgresql'
 
+    // Hibernate Spatial
+    implementation 'org.hibernate:hibernate-spatial:6.2.6.Final'
+
+    // JTS 라이브러리
+    implementation 'org.locationtech.jts:jts-core:1.19.0'
+
     // Lombok
     annotationProcessor 'org.projectlombok:lombok'
     compileOnly 'org.projectlombok:lombok'

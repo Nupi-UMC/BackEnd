@@ -1,4 +1,4 @@
-package com.project.nupibe.domain.redis;
+package com.project.nupibe.domain.member.redis;
 
 import org.springframework.stereotype.Service;
 import org.springframework.data.redis.core.RedisTemplate;
