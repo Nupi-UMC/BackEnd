@@ -1,6 +1,6 @@
-package com.project.nupibe.domain.service;
+package com.project.nupibe.domain.member.service;
 
-import com.project.nupibe.domain.redis.RedisService;
+import com.project.nupibe.domain.member.redis.RedisService;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;

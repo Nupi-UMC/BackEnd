@@ -1,4 +1,4 @@
-package com.project.nupibe.domain.dto.request;
+package com.project.nupibe.domain.member.dto.request;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotNull;
