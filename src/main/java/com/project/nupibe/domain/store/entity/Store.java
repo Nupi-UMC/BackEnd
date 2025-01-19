@@ -26,7 +26,7 @@ public class Store extends BaseEntity {
     @Column(name = "location")
     private String location; // 피그마 상 무슨 역 몇번 출구
 
-    @Column(name = "address", nullable = false)
+    @Column(name = "address")//, nullable = false) test를 위해 nullable 삭제
     private String address;
 
     @Column(name = "business_hours")

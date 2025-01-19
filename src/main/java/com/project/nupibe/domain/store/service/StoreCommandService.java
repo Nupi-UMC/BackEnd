@@ -8,7 +8,6 @@ import com.project.nupibe.domain.store.exception.code.StoreErrorCode;
 import com.project.nupibe.domain.store.exception.handler.StoreException;
 import com.project.nupibe.domain.store.repository.StoreRepository;
 import com.project.nupibe.global.apiPayload.code.GeneralErrorCode;
-import com.project.nupibe.global.apiPayload.exception.handler.StoreHandler;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
