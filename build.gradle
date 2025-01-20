@@ -17,6 +17,10 @@ repositories {
     mavenCentral()
 }
 
+jar{
+    enabled=false
+}
+
 dependencies {
     // JPA
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
@@ -61,6 +65,9 @@ dependencies {
 
     // Slf4j
     implementation 'org.slf4j:slf4j-api:2.0.7'
+
+    // Validation
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
 }
 
 tasks.named('test') {
