@@ -1,4 +1,4 @@
-package com.project.nupibe.domain.store.exception.code;
+package com.project.nupibe.domain.member.exception.code;
 
 import com.project.nupibe.global.apiPayload.code.BaseErrorCode;
 import lombok.AllArgsConstructor;
@@ -6,15 +6,11 @@ import lombok.Getter;
 import org.springframework.http.HttpStatus;
 @Getter
 @AllArgsConstructor
-public enum StoreErrorCode implements BaseErrorCode {
+public enum MemberErrorCode implements BaseErrorCode {
     NOT_FOUND(HttpStatus.NOT_FOUND,
-            "STORE404",
-                    "가게를 찾을 수 없습니다."),
-    ALREADY_EXISTS(HttpStatus.CONFLICT,
-            "STORE409",
-            "이미 가게가 존재합니다.");
-
-
+            "MEMBER404",
+                    "사용자를 찾을 수 없습니다."),
+            ;
 
     private final HttpStatus status;
     private final String code;
