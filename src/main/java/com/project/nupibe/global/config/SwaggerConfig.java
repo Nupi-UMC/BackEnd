@@ -16,7 +16,7 @@ public class SwaggerConfig {
     public OpenAPI swagger() {
         Info info = new Info().title("NUPI Project").description("UMC7th 데모데이 - NUPI").version("0.0.1");
         String securityScheme = "JWT TOKEN";
-        SecurityRequirement secgit urityRequirement = new SecurityRequirement().addList(securityScheme);
+        SecurityRequirement securityRequirement = new SecurityRequirement().addList(securityScheme);
         Components components = new Components()
                 .addSecuritySchemes(securityScheme, new SecurityScheme()
                         .name(securityScheme)
