@@ -6,6 +6,7 @@ import lombok.*;
 
 @Entity
 @Getter
+@Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Builder
@@ -30,4 +31,8 @@ public class Member extends BaseEntity {
 
     @Column(name = "is_verified", nullable = false)
     private boolean isVerified;
+
+    public void setVerified(boolean isVerified) {
+        this.isVerified = isVerified;
+    }
 }
