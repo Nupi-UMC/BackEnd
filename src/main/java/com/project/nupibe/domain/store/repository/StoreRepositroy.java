@@ -7,6 +7,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.util.List;
+
 public interface StoreRepositroy extends JpaRepository<Store, Long> {
     @Query(
             value = "SELECT * FROM store s WHERE earth_distance(" +
@@ -21,6 +23,4 @@ public interface StoreRepositroy extends JpaRepository<Store, Long> {
             nativeQuery = true
     )
     Slice<Store> findByQuery(Pageable pageable, @Param("query") String query);
-
-
 }
