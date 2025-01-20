@@ -3,6 +3,8 @@ package com.project.nupibe.domain.store.repository;
 import com.project.nupibe.domain.route.dto.response.RouteStoreDTO;
 import com.project.nupibe.domain.store.entity.Store;
 import io.lettuce.core.dynamic.annotation.Param;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
@@ -42,4 +44,7 @@ public interface StoreRepository extends JpaRepository<Store, Long> {
     ORDER BY rs1.order_index
 """, nativeQuery = true)
     List<Object[]> findStoresWithCalculatedDistance(@Param("routeId") Long routeId);
+
+    @Query("SELECT s.group FROM Store s")
+    List<String> findAllGroup();
 }
