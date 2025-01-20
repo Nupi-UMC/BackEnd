@@ -1,24 +1,58 @@
 package com.project.nupibe.global.config;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
 
-@Configuration
+import java.util.ArrayList;
+import java.util.Collections;
+
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class CorsConfig {
 
-    @Bean
-    public CorsFilter corsFilter() {
-        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        CorsConfiguration config = new CorsConfiguration();
-        config.setAllowCredentials(true);
-        config.addAllowedOrigin("*");
-        config.addAllowedHeader("*");
-        config.addAllowedMethod("*");
+    public static CorsConfigurationSource apiConfigurationSource() {
+        CorsConfiguration configuration = new CorsConfiguration();
 
-        source.registerCorsConfiguration("/api/**", config);
-        return new CorsFilter(source);
+        // 허용할 Origin(출처) 리스트
+        ArrayList<String> allowedOriginPatterns = new ArrayList<>();
+        allowedOriginPatterns.add("http://localhost:8080");
+        allowedOriginPatterns.add("http://127.0.0.1:8080");
+        allowedOriginPatterns.add("http://localhost:3000");
+        allowedOriginPatterns.add("http://127.0.0.1:3000");
+        allowedOriginPatterns.add("http://localhost:5500");
+        allowedOriginPatterns.add("http://127.0.0.1:5500");
+        allowedOriginPatterns.add("http://localhost:5000");
+        allowedOriginPatterns.add("http://127.0.0.1:5000");
+        allowedOriginPatterns.add("https://api-nupi.shop");
+        allowedOriginPatterns.add("https://www.api-nupi.shop");
+
+        configuration.setAllowedOrigins(allowedOriginPatterns); // 허용할 Origin 설정
+
+        // 허용할 HTTP 메서드
+        ArrayList<String> allowedHttpMethods = new ArrayList<>();
+        allowedHttpMethods.add("GET");
+        allowedHttpMethods.add("POST");
+        allowedHttpMethods.add("PUT");
+        allowedHttpMethods.add("DELETE");
+        allowedHttpMethods.add("PATCH");
+        allowedHttpMethods.add("OPTIONS"); // Preflight 요청을 위해 OPTIONS 추가
+        configuration.setAllowedMethods(allowedHttpMethods);
+
+        // 모든 요청 헤더 허용
+        configuration.setAllowedHeaders(Collections.singletonList("*"));
+
+        // 인증 정보(쿠키, 헤더)를 포함한 요청 허용
+        configuration.setAllowCredentials(true);
+
+        // CORS 설정 적용 경로
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", configuration);
+
+        return source;
     }
 }
