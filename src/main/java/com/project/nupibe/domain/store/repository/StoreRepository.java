@@ -45,6 +45,6 @@ public interface StoreRepository extends JpaRepository<Store, Long> {
 """, nativeQuery = true)
     List<Object[]> findStoresWithCalculatedDistance(@Param("routeId") Long routeId);
 
-    @Query("SELECT s.group FROM Store s")
+    @Query("SELECT s.groupInfo FROM Store s")
     List<String> findAllGroup();
 }
