@@ -17,4 +17,15 @@ public class HomeController {
         HomeResponseDTO.GetHomeResponseDTO getHomeResponseDTO = homeQueryService.getHome(memberId);
         return CustomResponse.onSuccess(getHomeResponseDTO);
     }
+
+    @GetMapping("/{memberId}/search")
+    public CustomResponse<HomeResponseDTO.entertainmentDTO> searchEntertainment
+            (@PathVariable Long memberId,
+             @RequestParam double latitude,
+             @RequestParam double longitude,
+             @RequestParam(value = "category", required = false, defaultValue = "0") int category,
+             @RequestParam(value = "sort", required = false, defaultValue = "default") String sort) {
+        HomeResponseDTO.entertainmentDTO getEntertainmentDTO = homeQueryService.getEntertainment(memberId, latitude, longitude, category, sort);
+        return CustomResponse.onSuccess(getEntertainmentDTO);
+    }
 }

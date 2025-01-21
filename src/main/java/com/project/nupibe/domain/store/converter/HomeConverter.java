@@ -1,6 +1,7 @@
 package com.project.nupibe.domain.store.converter;
 
 import com.project.nupibe.domain.store.dto.response.HomeResponseDTO;
+import com.project.nupibe.domain.store.entity.Store;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,6 +21,57 @@ public class HomeConverter {
         List<HomeResponseDTO.groupNameDTO> list = new ArrayList<>();
         for(String name : names) {
             list.add(new HomeResponseDTO.groupNameDTO(name));
+        }
+        return list;
+    }
+
+    public static HomeResponseDTO.entertainmentDTO toEntertainmentDTO(List<HomeResponseDTO.categoryDTO> category,
+                                                                      String sort,
+                                                                      List<HomeResponseDTO.storeDTO> stores) {
+        return HomeResponseDTO.entertainmentDTO.builder()
+                .category(category)
+                .sort(sort)
+                .stores(stores).build();
+    }
+
+    public static List<HomeResponseDTO.categoryDTO> toCategoryDTO(List<String> categories, int selected) {
+        List<HomeResponseDTO.categoryDTO> list = new ArrayList<>();
+
+        if(selected == 0) {
+            int i = 1;
+            for(String category : categories) {
+                HomeResponseDTO.categoryDTO temp = HomeResponseDTO.categoryDTO.builder()
+                        .cateogoryId(i)
+                        .category(category)
+                        .selected(true).build();
+                list.add(temp);
+            }
+            return list;
+        }
+        else {
+            int i = 1;
+            for(String category : categories) {
+                HomeResponseDTO.categoryDTO temp = HomeResponseDTO.categoryDTO.builder()
+                        .cateogoryId(i)
+                        .category(category)
+                        .selected(i == (selected - 1)).build();
+                list.add(temp);
+            }
+            return list;
+        }
+    }
+
+    public static List<HomeResponseDTO.storeDTO> toStoreDTO(List<Store> stores) {
+        List<HomeResponseDTO.storeDTO> list = new ArrayList<>();
+
+        for(Store store : stores) {
+            HomeResponseDTO.storeDTO temp = HomeResponseDTO.storeDTO.builder()
+                    .storeId(store.getId())
+                    .storeName(store.getName())
+                    .storePic(store.getImage())
+                    .storePlace(store.getLocation())
+                    .isFavor(store.getBookmarkNum()).build();
+            list.add(temp);
         }
         return list;
     }

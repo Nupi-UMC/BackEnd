@@ -20,4 +20,27 @@ public class HomeResponseDTO {
             int regionId,
             String regionName
     ){};
+
+    @Builder
+    public record entertainmentDTO(
+            List<categoryDTO> category,
+            String sort,
+            List<storeDTO> stores
+    ) {};
+
+    @Builder
+    public record categoryDTO(
+            int cateogoryId,
+            String category,
+            boolean selected
+    ) {};
+
+    @Builder
+    public record storeDTO(
+            Long storeId,
+            String storeName,
+            String storePic,
+            String storePlace,
+            int isFavor
+    ) {};
 }

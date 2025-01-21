@@ -47,4 +47,25 @@ public interface StoreRepository extends JpaRepository<Store, Long> {
 
     @Query("SELECT s.groupInfo FROM Store s")
     List<String> findAllGroup();
+
+    @Query("SELECT DISTINCT s.category FROM Store s")
+    List<String> findAllCategory();
+
+    @Query("SELECT s FROM Store s ORDER BY SQRT(POW((s.latitude - :latitude), 2) + POW((s.longitude - :longitude), 2))")
+    List<Store> findAllOrderDistance(@Param("latitude") double latitude, @Param("longitude") double longitude);
+
+    @Query("SELECT s FROM Store s ORDER BY s.bookmarkNum")
+    List<Store> findAllOrderBookmark();
+
+    @Query("SELECT s FROM Store s ORDER BY s.bookmarkNum")
+    List<Store> findAllOrderRecommend();
+
+    @Query("SELECT s FROM Store s WHERE s.category = :category ORDER BY SQRT(POW((s.latitude - :latitude), 2) + POW((s.longitude - :longitude), 2))")
+    List<Store> findCategoryOrderDistance(@Param("category") String category, @Param("latitude") double latitude, @Param("longitude") double longitude);
+
+    @Query("SELECT s FROM Store s WHERE s.category = :category ORDER BY s.bookmarkNum")
+    List<Store> findCategoryOrderBookmark(@Param("category") String category);
+
+    @Query("SELECT s FROM Store s WHERE s.category = :category ORDER BY s.bookmarkNum")
+    List<Store> findCategoryOrderRecommend(@Param("category") String category);
 }
