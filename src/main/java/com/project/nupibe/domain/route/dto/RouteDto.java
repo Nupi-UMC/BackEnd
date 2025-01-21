@@ -14,9 +14,10 @@ public class RouteDto {
     private Long routeId;
     private Long memberId;
     private String routeName;
-    private String content;
+    private String category;
     private String location;
     private LocalDateTime createdAt;
+
 
 
 

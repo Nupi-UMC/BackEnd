@@ -40,4 +40,7 @@ public class Route extends BaseEntity {
 
     @Column(name = "bookmark_num", nullable = false)
     private int bookmarkNum;
+
+    @Column(name="category", nullable = false)
+    private String category;
 }
