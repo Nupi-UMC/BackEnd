@@ -18,8 +18,9 @@ public interface RouteRepository extends JpaRepository<Route,Long> {
     List<Route> findByDateBetween(LocalDateTime startOfDay, LocalDateTime endOfDay);
 
     // 특정 날짜 범위 내의 경로가 있는 날짜 조회
-    @Query("SELECT r.date FROM Route r WHERE r.date BETWEEN :startDate AND :endDate")
-    List<LocalDateTime> findDatesBetween(@Param("startDate") LocalDateTime startDate, @Param("endDate") LocalDateTime endDate);
+    @Query("SELECT r.date FROM Route r WHERE r.date BETWEEN :startDate AND :endDate AND r.member.id = :memberId")
+    List<LocalDateTime> findDatesBetweenAndMemberId(LocalDateTime startDate, LocalDateTime endDate, Long memberId);
+
 }
 
 

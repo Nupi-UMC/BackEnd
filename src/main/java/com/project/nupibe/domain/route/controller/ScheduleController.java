@@ -1,9 +1,13 @@
 package com.project.nupibe.domain.route.controller;
 
+import com.project.nupibe.domain.route.dto.RouteCalendarResponseDto;
 import com.project.nupibe.domain.route.dto.RouteDto;
 import com.project.nupibe.domain.route.service.ScheduleService;
 import com.project.nupibe.global.apiPayload.CustomResponse;
 import com.project.nupibe.global.apiPayload.code.GeneralErrorCode;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -20,6 +24,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/routes")
+@Tag(name="일정 조회 API", description = "달력 일정 조회 및 날짜 일정 조회 API")
 public class ScheduleController {
 
 
@@ -76,9 +81,13 @@ public class ScheduleController {
             return routes;
         }
     }
-
+    @Operation(summary = "월별 일정 조회",description = "사용자의 특정 월의 일정이 있는 날짜들을 조회합니다.")
     @GetMapping("/calendar")
-    public ResponseEntity<CustomResponse<?>> getDatesWithRoutes(@RequestParam String month) {
+    public ResponseEntity<CustomResponse<?>> getDatesWithRoutes(
+            @Parameter(description = "조회할 연-월 (yyyy-MM 형식)", example = "2024-12")
+            @RequestParam String month,
+            @Parameter(description = "회원 ID", example = "1")
+            @RequestParam Long memberId) {
         try {
             // 요청받은 month를 LocalDate로 파싱
             YearMonth parsedMonth = YearMonth.parse(month, DateTimeFormatter.ofPattern("yyyy-MM"));
@@ -88,9 +97,11 @@ public class ScheduleController {
             LocalDate endDate = parsedMonth.atEndOfMonth(); // 해당 월의 마지막 날
 
             // 서비스 호출
-            List<LocalDate> datesWithRoutes = scheduleService.getDatesWithRoutes(startDate, endDate);
+            List<LocalDate> datesWithRoutes = scheduleService.getDatesWithRoutes(startDate, endDate, memberId);
 
-            return ResponseEntity.ok(CustomResponse.onSuccess(datesWithRoutes));
+            RouteCalendarResponseDto responseDto= new RouteCalendarResponseDto(month,datesWithRoutes);
+
+            return ResponseEntity.ok(CustomResponse.onSuccess(responseDto));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(
                     CustomResponse.onFailure("VALID400_0", "잘못된 요청입니다.")
