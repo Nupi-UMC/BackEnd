@@ -51,7 +51,7 @@ public interface StoreRepository extends JpaRepository<Store, Long> {
     @Query("SELECT DISTINCT s.category FROM Store s")
     List<String> findAllCategory();
 
-    @Query("SELECT s FROM Store s ORDER BY SQRT(POW((s.latitude - :latitude), 2) + POW((s.longitude - :longitude), 2))")
+    @Query("SELECT s FROM Store s ORDER BY ST_Distance(ST_MakePoint(s.longitude, s.latitude), ST_MakePoint(:longitude, :latitude))")
     List<Store> findAllOrderDistance(@Param("latitude") double latitude, @Param("longitude") double longitude);
 
     @Query("SELECT s FROM Store s ORDER BY s.bookmarkNum")
@@ -60,7 +60,7 @@ public interface StoreRepository extends JpaRepository<Store, Long> {
     @Query("SELECT s FROM Store s ORDER BY s.bookmarkNum")
     List<Store> findAllOrderRecommend();
 
-    @Query("SELECT s FROM Store s WHERE s.category = :category ORDER BY SQRT(POW((s.latitude - :latitude), 2) + POW((s.longitude - :longitude), 2))")
+    @Query("SELECT s FROM Store s WHERE s.category = :category ORDER BY ST_Distance(ST_MakePoint(s.longitude, s.latitude), ST_MakePoint(:longitude, :latitude))")
     List<Store> findCategoryOrderDistance(@Param("category") String category, @Param("latitude") double latitude, @Param("longitude") double longitude);
 
     @Query("SELECT s FROM Store s WHERE s.category = :category ORDER BY s.bookmarkNum")
