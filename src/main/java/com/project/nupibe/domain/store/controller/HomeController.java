@@ -28,4 +28,12 @@ public class HomeController {
         HomeResponseDTO.entertainmentDTO getEntertainmentDTO = homeQueryService.getEntertainment(memberId, latitude, longitude, category, sort);
         return CustomResponse.onSuccess(getEntertainmentDTO);
     }
+
+    @GetMapping("/{memberId}/route")
+    public CustomResponse<HomeResponseDTO.myRouteDTO> getRoute(
+            @PathVariable Long memberId,
+            @RequestParam(value = "myRoute", required = true, defaultValue = "created") String routeType) {
+        HomeResponseDTO.myRouteDTO myRoute = homeQueryService.getRoute(memberId, routeType);
+        return CustomResponse.onSuccess(myRoute);
+    }
 }

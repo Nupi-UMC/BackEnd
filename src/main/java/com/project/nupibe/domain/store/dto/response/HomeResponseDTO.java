@@ -43,4 +43,17 @@ public class HomeResponseDTO {
             String storePlace,
             int isFavor
     ) {};
+
+    @Builder
+    public record myRouteDTO(
+            List<routesDTO> routes
+    ) {};
+
+    @Builder
+    public record routesDTO(
+            Long routeId,
+            String routeName,
+            String routeLocation,
+            String routePic
+    ){};
 }
