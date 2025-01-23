@@ -29,6 +29,11 @@ public class HomeResponseDTO {
     ) {};
 
     @Builder
+    public record groupStoreDTO(
+            List<storeDTO> stores
+    ) {};
+
+    @Builder
     public record categoryDTO(
             int cateogoryId,
             String category,
@@ -41,7 +46,7 @@ public class HomeResponseDTO {
             String storeName,
             String storePic,
             String storePlace,
-            int isFavor
+            boolean isFavor
     ) {};
 
     @Builder
