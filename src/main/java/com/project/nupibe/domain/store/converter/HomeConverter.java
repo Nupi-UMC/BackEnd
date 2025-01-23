@@ -1,5 +1,6 @@
 package com.project.nupibe.domain.store.converter;
 
+import com.project.nupibe.domain.member.entity.Member;
 import com.project.nupibe.domain.route.entity.Route;
 import com.project.nupibe.domain.store.dto.response.HomeResponseDTO;
 import com.project.nupibe.domain.store.entity.Store;
@@ -62,17 +63,19 @@ public class HomeConverter {
         }
     }
 
-    public static List<HomeResponseDTO.storeDTO> toStoreDTO(List<Store> stores) {
+    public static List<HomeResponseDTO.storeDTO> toStoreDTO(List<Boolean> isFavor, List<Store> stores) {
         List<HomeResponseDTO.storeDTO> list = new ArrayList<>();
 
+        int i = 0;
         for(Store store : stores) {
             HomeResponseDTO.storeDTO temp = HomeResponseDTO.storeDTO.builder()
                     .storeId(store.getId())
                     .storeName(store.getName())
                     .storePic(store.getImage())
                     .storePlace(store.getLocation())
-                    .isFavor(store.getBookmarkNum()).build();
+                    .isFavor(isFavor.get(i)).build();
             list.add(temp);
+            i++;
         }
         return list;
     }
@@ -91,5 +94,21 @@ public class HomeConverter {
 
         return HomeResponseDTO.myRouteDTO.builder()
                 .routes(list).build();
+    }
+
+    public static HomeResponseDTO.groupStoreDTO toGroupStoreDTO(List<Store> stores, List<Boolean> isFavors) {
+        List<HomeResponseDTO.storeDTO> list = new ArrayList<>();
+
+        for(int i = 0; i < stores.size(); i++) {
+            HomeResponseDTO.storeDTO store = HomeResponseDTO.storeDTO.builder()
+                    .storeId(stores.get(i).getId())
+                    .storeName(stores.get(i).getName())
+                    .storePlace(stores.get(i).getLocation())
+                    .storePic(stores.get(i).getImage())
+                    .isFavor(isFavors.get(i)).build();
+            list.add(store);
+        }
+        return HomeResponseDTO.groupStoreDTO.builder()
+                .stores(list).build();
     }
 }

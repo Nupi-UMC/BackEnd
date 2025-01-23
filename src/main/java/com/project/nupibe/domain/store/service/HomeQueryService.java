@@ -5,6 +5,7 @@ import com.project.nupibe.domain.member.exception.code.MemberErrorCode;
 import com.project.nupibe.domain.member.exception.handler.MemberException;
 import com.project.nupibe.domain.member.repository.MemberRepository;
 import com.project.nupibe.domain.member.repository.MemberRouteRepository;
+import com.project.nupibe.domain.member.repository.MemberStoreRepository;
 import com.project.nupibe.domain.region.entity.Region;
 import com.project.nupibe.domain.region.repository.RegionRepository;
 import com.project.nupibe.domain.route.entity.Route;
@@ -31,6 +32,7 @@ public class HomeQueryService {
     private final RouteRepository routeRepository;
     private final MemberRouteRepository memberRouteRepository;
     private final RouteStoreRepository routeStoreRepository;
+    private final MemberStoreRepository memberStoreRepository;
 
     public HomeResponseDTO.GetHomeResponseDTO getHome(Long memberId) {
         Member member = memberRepository.findById(memberId).orElseThrow(() -> new MemberException(MemberErrorCode.NOT_FOUND));
@@ -63,7 +65,13 @@ public class HomeQueryService {
         }
 
         List<Store> stores = getStoreByConditions(categories, selected, sortId, latitude, longitude);
-        List<HomeResponseDTO.storeDTO> storeList = HomeConverter.toStoreDTO(stores);
+
+        List<Boolean> isFavors = new ArrayList<>();
+        for(Store store : stores) {
+            boolean isFavor = memberStoreRepository.existsByMemberIdAndStoreId(member.getId(), store.getId());
+            isFavors.add(isFavor);
+        }
+        List<HomeResponseDTO.storeDTO> storeList = HomeConverter.toStoreDTO(isFavors, stores);
 
         return HomeConverter.toEntertainmentDTO(category, sort, storeList);
     }
@@ -105,5 +113,17 @@ public class HomeQueryService {
         }
 
         return HomeConverter.toMyRouteDTO(routes, images);
+    }
+
+    public HomeResponseDTO.groupStoreDTO getGroupStore(Long memberId, String groupName) {
+        Member member = memberRepository.findById(memberId).orElseThrow(() -> new MemberException(MemberErrorCode.NOT_FOUND));
+
+        List<Store> stores = storeRepository.findByGroupName(groupName);
+        List<Boolean> isFavors = new ArrayList<>();
+        for(Store store : stores) {
+            boolean isFavor = memberStoreRepository.existsByMemberIdAndStoreId(member.getId(), store.getId());
+            isFavors.add(isFavor);
+        }
+        return HomeConverter.toGroupStoreDTO(stores, isFavors);
     }
 }
