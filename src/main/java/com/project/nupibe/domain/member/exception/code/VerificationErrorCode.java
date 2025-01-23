@@ -9,8 +9,8 @@ import org.springframework.http.HttpStatus;
 @AllArgsConstructor
 public enum VerificationErrorCode implements BaseErrorCode {
 
-    INVALID_EMAIL(HttpStatus.BAD_REQUEST, "ERROR400", "유효하지 않은 이메일입니다."),
-    EMAIL_SEND_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "ERROR500", "이메일 전송에 실패했습니다.");
+    INVALID_EMAIL(HttpStatus.BAD_REQUEST, "400", "유효하지 않은 이메일입니다."),
+    EMAIL_SEND_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "500", "이메일 전송에 실패했습니다.");
 
     private final HttpStatus status;
     private final String code;
