@@ -33,7 +33,14 @@ public class HomeController {
     public CustomResponse<HomeResponseDTO.myRouteDTO> getRoute(
             @PathVariable Long memberId,
             @RequestParam(value = "myRoute", required = true, defaultValue = "created") String routeType) {
-        HomeResponseDTO.myRouteDTO myRoute = homeQueryService.getRoute(memberId, routeType);
-        return CustomResponse.onSuccess(myRoute);
+        HomeResponseDTO.myRouteDTO routes = homeQueryService.getRoute(memberId, routeType);
+        return CustomResponse.onSuccess(routes);
+    }
+
+    @GetMapping("/{memberId}/{groupName}")
+    public CustomResponse<HomeResponseDTO.groupStoreDTO> getGroupStore(
+            @PathVariable Long memberId, @PathVariable String groupName) {
+        HomeResponseDTO.groupStoreDTO stores = homeQueryService.getGroupStore(memberId, groupName);
+        return CustomResponse.onSuccess(stores);
     }
 }
