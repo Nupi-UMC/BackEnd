@@ -10,9 +10,13 @@ import com.project.nupibe.domain.route.exception.RouteException;
 import com.project.nupibe.domain.route.repository.RouteRepository;
 import com.project.nupibe.domain.store.repository.StoreRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -81,5 +85,18 @@ public class RouteQueryService {
     // 거리 포맷팅 메서드
     private String formatDistance(Double distance) {
         return distance != null ? String.format("%.1f Km", distance) : null;
+    }
+
+    //경로 검색 조회
+    public RouteDetailResDTO.RoutePageResponse getRoutesWithQuery(String query, int cursor, int offset){
+        Pageable pageable = PageRequest.of(cursor, offset);
+        Slice<Route> routes = routeRepository.findByQuery(pageable, query);
+
+        // routes가 비어있는지 확인하고 빈 리스트일 경우 처리
+        if (routes.isEmpty()) {
+            return new RouteDetailResDTO.RoutePageResponse(new ArrayList<>(), false,0L); // 빈 리스트로 초기화
+        }
+
+        return RouteConverter.convertToRoutePageDTO(routes);
     }
 }
