@@ -16,13 +16,13 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/stores")
-@Tag(name = "가게 API")
+@Tag(name = "장소 API")
 public class StoreController {
     private final StoreQueryService storeQueryService;
     private final StoreCommandService storeCommandService;
 
     @GetMapping("{storeId}/detail")
-    @Operation(method = "GET", summary = "가게 단일 조회(detail) API", description = "가게 상세페이지 조회입니다.")
+    @Operation(method = "GET", summary = "장소 단일 조회(detail) API", description = "장소 상세페이지 조회입니다.")
     public CustomResponse<StoreResponseDTO.StoreDetailResponseDTO> getStoreDetail(@PathVariable("storeId") Long storeId){
         StoreResponseDTO.StoreDetailResponseDTO responseDTO = storeQueryService.getStoreDetail(storeId);
         return CustomResponse.onSuccess(responseDTO);
@@ -30,14 +30,14 @@ public class StoreController {
 
 
     @PostMapping("{storeId}/bookmark")
-    @Operation(method = "POST", summary = "가게 북마크 API", description = "가게 북마크 버튼을 클릭시 작동하는 기능입니다..")
+    @Operation(method = "POST", summary = "장소 북마크 API", description = "장소 북마크 버튼을 클릭시 작동하는 기능입니다..")
     public ResponseEntity<String> bookmarkStore(@RequestParam Long memberId, @PathVariable("storeId") Long storeId) {
         storeCommandService.bookmarkStore(memberId, storeId);
         return ResponseEntity.ok("Store bookmarked successfully");
     }
 
     @GetMapping("/{storeId}/preview")
-    @Operation(method = "GET", summary = "가게 단일 조회(preview) API", description = "지도 마커 클릭 시 나오는 가게 단일 조회입니다.")
+    @Operation(method = "GET", summary = "장소 단일 조회(preview) API", description = "지도 마커 클릭 시 나오는 장소 단일 조회입니다.")
     public CustomResponse<StoreResponseDTO.StorePreviewDTO> getStorePreview(
             @PathVariable("storeId") Long storeId
     ){
@@ -46,7 +46,7 @@ public class StoreController {
     }
 
     @GetMapping("/around")
-    @Operation(method = "GET", summary = "내 주변 가게 조회 API", description = "현재 위치 주변에 있느 가게들을 조회하는 API입니다.")
+    @Operation(method = "GET", summary = "내 주변 장소 조회 API", description = "현재 위치 주변에 있는 장소들을 조회하는 API입니다.")
     public CustomResponse<StoreResponseDTO.StorePageDTO> getStores(
             @RequestParam(value="cursor", defaultValue = "0") int cursor,
             @RequestParam(value = "offset", defaultValue = "8") int offset,
@@ -58,7 +58,7 @@ public class StoreController {
     }
 
     @GetMapping("/search")
-    @Operation(method = "GET", summary = "가게 검색 조회 API", description = "키워드 검색을 통한 가게 조회 API입니다.")
+    @Operation(method = "GET", summary = "장소 검색 조회 API", description = "키워드 검색을 통한 장소 조회 API입니다.")
     public CustomResponse<StoreResponseDTO.StorePageDTO> getStoresWithQuery(
             @RequestParam (value="query") String query,
             @RequestParam(value="cursor", defaultValue = "0") int cursor,
