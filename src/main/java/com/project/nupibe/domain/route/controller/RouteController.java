@@ -7,10 +7,7 @@ import com.project.nupibe.global.apiPayload.CustomResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -32,5 +29,16 @@ public class RouteController {
     public CustomResponse<RoutePlacesResDTO.RoutePlacesResponse> getRoutePlaces(@PathVariable Long routeId) {
         RoutePlacesResDTO.RoutePlacesResponse response = routeQueryService.getRoutePlaces(routeId);
         return CustomResponse.onSuccess(response);
+    }
+
+    @GetMapping("/search")
+    @Operation(method = "GET", summary = "경로 검색 조회 API", description = "키워드 검색을 통한 경로 조회 API입니다.")
+    public CustomResponse<RouteDetailResDTO.RoutePageResponse> getRoutesWithQuery(
+            @RequestParam(value="query") String query,
+            @RequestParam(value="cursor", defaultValue = "0") int cursor,
+            @RequestParam(value = "offset", defaultValue = "8") int offset
+    ){
+        RouteDetailResDTO.RoutePageResponse result = routeQueryService.getRoutesWithQuery(query, cursor, offset);
+        return CustomResponse.onSuccess(result);
     }
 }
