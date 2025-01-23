@@ -4,8 +4,12 @@ import com.project.nupibe.domain.member.entity.Member;
 import com.project.nupibe.domain.member.exception.code.MemberErrorCode;
 import com.project.nupibe.domain.member.exception.handler.MemberException;
 import com.project.nupibe.domain.member.repository.MemberRepository;
+import com.project.nupibe.domain.member.repository.MemberRouteRepository;
 import com.project.nupibe.domain.region.entity.Region;
 import com.project.nupibe.domain.region.repository.RegionRepository;
+import com.project.nupibe.domain.route.entity.Route;
+import com.project.nupibe.domain.route.repository.RouteRepository;
+import com.project.nupibe.domain.route.repository.RouteStoreRepository;
 import com.project.nupibe.domain.store.converter.HomeConverter;
 import com.project.nupibe.domain.store.dto.response.HomeResponseDTO;
 import com.project.nupibe.domain.store.entity.Store;
@@ -24,6 +28,9 @@ public class HomeQueryService {
     private final MemberRepository memberRepository;
     private final StoreRepository storeRepository;
     private final RegionRepository regionRepository;
+    private final RouteRepository routeRepository;
+    private final MemberRouteRepository memberRouteRepository;
+    private final RouteStoreRepository routeStoreRepository;
 
     public HomeResponseDTO.GetHomeResponseDTO getHome(Long memberId) {
         Member member = memberRepository.findById(memberId).orElseThrow(() -> new MemberException(MemberErrorCode.NOT_FOUND));
@@ -77,5 +84,26 @@ public class HomeQueryService {
             }
         }
         return new ArrayList<Store>();
+    }
+
+    public HomeResponseDTO.myRouteDTO getRoute(Long memberId, String routeType) {
+        Member member = memberRepository.findById(memberId).orElseThrow(() -> new MemberException(MemberErrorCode.NOT_FOUND));
+
+        List<Route> routes = new ArrayList<>();
+        switch (routeType) {
+            case "created" :
+                routes = routeRepository.findByMember(member);
+                break;
+            case "saved" :
+                routes = memberRouteRepository.findByMember(member);
+        }
+
+        List<String> images = new ArrayList<>();
+        for(Route route : routes) {
+            String pic = routeStoreRepository.findFirstImage(route);
+            images.add(pic);
+        }
+
+        return HomeConverter.toMyRouteDTO(routes, images);
     }
 }

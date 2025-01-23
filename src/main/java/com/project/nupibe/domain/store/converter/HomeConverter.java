@@ -1,5 +1,6 @@
 package com.project.nupibe.domain.store.converter;
 
+import com.project.nupibe.domain.route.entity.Route;
 import com.project.nupibe.domain.store.dto.response.HomeResponseDTO;
 import com.project.nupibe.domain.store.entity.Store;
 
@@ -74,5 +75,21 @@ public class HomeConverter {
             list.add(temp);
         }
         return list;
+    }
+
+    public static HomeResponseDTO.myRouteDTO toMyRouteDTO(List<Route> routes, List<String> images) {
+        List<HomeResponseDTO.routesDTO> list = new ArrayList<>();
+
+        for(int i = 0; i < routes.size(); i++) {
+            HomeResponseDTO.routesDTO route = HomeResponseDTO.routesDTO.builder()
+                    .routeId(routes.get(i).getId())
+                    .routeName(routes.get(i).getRouteName())
+                    .routeLocation(routes.get(i).getLocation())
+                    .routePic(images.get(i)).build();
+            list.add(route);
+        }
+
+        return HomeResponseDTO.myRouteDTO.builder()
+                .routes(list).build();
     }
 }

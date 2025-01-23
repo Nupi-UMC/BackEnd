@@ -1,5 +1,6 @@
 package com.project.nupibe.domain.route.repository;
 
+import com.project.nupibe.domain.member.entity.Member;
 import com.project.nupibe.domain.route.entity.Route;
 import io.lettuce.core.dynamic.annotation.Param;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -21,6 +22,8 @@ public interface RouteRepository extends JpaRepository<Route,Long> {
     @Query("SELECT r.date FROM Route r WHERE r.date BETWEEN :startDate AND :endDate AND r.member.id = :memberId")
     List<LocalDateTime> findDatesBetweenAndMemberId(LocalDateTime startDate, LocalDateTime endDate, Long memberId);
 
+    @Query("SELECT r FROM Route r WHERE r.member = :member")
+    List<Route> findByMember(@Param("member") Member member);
 }
 
 
