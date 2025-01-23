@@ -25,4 +25,28 @@ public class RouteDetailResDTO {
             String image
     ) {
     }
+
+    @Builder
+    public record StoreImage(
+            String image
+    ) {
+    }
+
+    @Builder
+    public record RoutePreviewResponse(
+            Long routeId,
+            String routeName,
+            List<StoreImage> image,
+            String location,
+            int likeNum,
+            int bookmarkNum
+    ) {
+    }
+
+    @Builder
+    public record RoutePageResponse(
+            List<RouteDetailResDTO.RoutePreviewResponse> routeList,
+            boolean hasNext,
+            Long cursor
+    ){}
 }
