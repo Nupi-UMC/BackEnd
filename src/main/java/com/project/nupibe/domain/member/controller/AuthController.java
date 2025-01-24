@@ -61,8 +61,8 @@ public class AuthController {
     @Operation(summary = "회원가입 API", description = "회원가입을 위한 API입니다.")
     public CustomResponse<ResponseSignupDto.Result> signup(@Valid @RequestBody RequestSignupDto signupDto) {
         try {
-            Long userId = signupService.signup(signupDto);
-            return CustomResponse.onSuccess(new ResponseSignupDto.Result(userId));
+            signupService.signup(signupDto);
+            return CustomResponse.onSuccess(new ResponseSignupDto.Result());
         } catch (IllegalArgumentException e) {
             throw new MemberException(SignupErrorCode.REQUIRED_FIELD_MISSING);
         } catch (MemberException e) {

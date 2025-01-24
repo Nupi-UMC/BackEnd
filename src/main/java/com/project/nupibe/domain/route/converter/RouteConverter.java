@@ -4,6 +4,8 @@ import com.project.nupibe.domain.route.dto.response.RouteDetailResDTO;
 import com.project.nupibe.domain.route.dto.response.RoutePlacesResDTO;
 import com.project.nupibe.domain.route.dto.response.RouteStoreDTO;
 import com.project.nupibe.domain.route.entity.Route;
+import com.project.nupibe.domain.route.entity.RouteStore;
+import org.springframework.data.domain.Slice;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -46,6 +48,53 @@ public class RouteConverter {
                 .routeName(route.getRouteName())
                 .date(route.getDate().toLocalDate().toString())
                 .places(placeDetails)
+                .build();
+    }
+
+    public static RouteDetailResDTO.RoutePreviewResponse convertToRoutePreviewDTO(Route route, List<RouteStoreDTO> storeList) {
+        List<RouteDetailResDTO.StoreImage> stores = storeList.stream()
+                .map(store -> RouteDetailResDTO.StoreImage.builder()
+                        .image(store.image())
+                        .build())
+                .collect(Collectors.toList());
+
+        return RouteDetailResDTO.RoutePreviewResponse.builder()
+                .routeId(route.getId())
+                .routeName(route.getRouteName())
+                .image(stores)
+                .location(route.getLocation())
+                .likeNum(route.getLikeNum())
+                .bookmarkNum(route.getBookmarkNum())
+                .build();
+    }
+
+    public static List<RouteStoreDTO> convertRouteStoresToDTOs(List<RouteStore> routeStores) {
+        return routeStores.stream()
+                .map(routeStore -> RouteStoreDTO.builder()
+                        .storeId(routeStore.getStore().getId())
+                        .name(routeStore.getStore().getName())
+                        .image(routeStore.getStore().getImage())
+                        .orderIndex(routeStore.getOrderIndex())
+                        .build())
+                .collect(Collectors.toList());
+    }
+
+
+    public static List<RouteDetailResDTO.RoutePreviewResponse> toRoutePreviewList(List<Route> routes){
+        return routes.stream()
+                .map(route -> {
+                    List<RouteStoreDTO> storeList = convertRouteStoresToDTOs(route.getRouteStores());
+                    return convertToRoutePreviewDTO(route, storeList);
+                })
+                .collect(Collectors.toList());
+    }
+
+    public static RouteDetailResDTO.RoutePageResponse convertToRoutePageDTO(Slice<Route> routes){
+        List<RouteDetailResDTO.RoutePreviewResponse> routeList = toRoutePreviewList(routes.getContent());
+        return RouteDetailResDTO.RoutePageResponse.builder()
+                .routeList(routeList)
+                .hasNext(routes.hasNext())
+                .cursor(routes.getContent().get(routes.getContent().size() - 1).getId())
                 .build();
     }
 }
