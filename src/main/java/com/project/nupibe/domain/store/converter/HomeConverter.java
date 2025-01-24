@@ -111,4 +111,10 @@ public class HomeConverter {
         return HomeResponseDTO.groupStoreDTO.builder()
                 .stores(list).build();
     }
+
+    public static HomeResponseDTO.savedDTO save(Long storeId, boolean save) {
+        return HomeResponseDTO.savedDTO.builder()
+                .storeId(storeId)
+                .saved(save).build();
+    }
 }
