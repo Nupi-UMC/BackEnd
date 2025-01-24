@@ -1,16 +1,18 @@
 package com.project.nupibe.domain.route.controller;
 
+
+import com.project.nupibe.domain.route.dto.RouteCreateRequestDto;
 import com.project.nupibe.domain.route.dto.response.RouteDetailResDTO;
 import com.project.nupibe.domain.route.dto.response.RoutePlacesResDTO;
+import com.project.nupibe.domain.route.service.KakaoNaviService;
+import com.project.nupibe.domain.route.service.RouteService;
 import com.project.nupibe.domain.route.service.query.RouteQueryService;
 import com.project.nupibe.global.apiPayload.CustomResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -19,6 +21,10 @@ import org.springframework.web.bind.annotation.RestController;
 public class RouteController {
 
     private final RouteQueryService routeQueryService;
+
+  //  private final KakaoNaviService kakaoNaviService;
+    private final RouteService routeService;
+
 
     @GetMapping("/{routeId}")
     @Operation(summary = "경로 상세 조회 API", description = "PathVariable로 보낸 id의 경로를 상세 조회 합니다.")
@@ -33,4 +39,14 @@ public class RouteController {
         RoutePlacesResDTO.RoutePlacesResponse response = routeQueryService.getRoutePlaces(routeId);
         return CustomResponse.onSuccess(response);
     }
+
+    @PostMapping
+    @Operation(summary = "최적 경로 요청 API", description = "출발지, 도착지 및 경유지를 포함한 최적 경로를 요청합니다.")
+    public ResponseEntity<?> getOptimalRoute(@RequestBody RouteCreateRequestDto requestDto) {
+        routeService.createRoute(requestDto);
+        return ResponseEntity.ok("경로가 성공적으로 생성되었습니다");
+
+
+    }
+
 }
