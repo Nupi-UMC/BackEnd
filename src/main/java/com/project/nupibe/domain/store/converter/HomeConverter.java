@@ -73,7 +73,7 @@ public class HomeConverter {
                     .storeName(store.getName())
                     .storePic(store.getImage())
                     .storePlace(store.getLocation())
-                    .isFavor(isFavor.get(i)).build();
+                    .saved(isFavor.get(i)).build();
             list.add(temp);
             i++;
         }
@@ -105,7 +105,7 @@ public class HomeConverter {
                     .storeName(stores.get(i).getName())
                     .storePlace(stores.get(i).getLocation())
                     .storePic(stores.get(i).getImage())
-                    .isFavor(isFavors.get(i)).build();
+                    .saved(isFavors.get(i)).build();
             list.add(store);
         }
         return HomeResponseDTO.groupStoreDTO.builder()

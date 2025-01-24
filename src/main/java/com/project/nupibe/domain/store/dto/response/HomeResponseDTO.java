@@ -46,7 +46,7 @@ public class HomeResponseDTO {
             String storeName,
             String storePic,
             String storePlace,
-            boolean isFavor
+            boolean saved
     ) {};
 
     @Builder
