@@ -47,6 +47,7 @@ public class HomeConverter {
                         .category(category)
                         .selected(true).build();
                 list.add(temp);
+                i++;
             }
             return list;
         }
@@ -56,8 +57,9 @@ public class HomeConverter {
                 HomeResponseDTO.categoryDTO temp = HomeResponseDTO.categoryDTO.builder()
                         .cateogoryId(i)
                         .category(category)
-                        .selected(i == (selected - 1)).build();
+                        .selected(i == selected).build();
                 list.add(temp);
+                i++;
             }
             return list;
         }
