@@ -61,4 +61,10 @@ public class HomeResponseDTO {
             String routeLocation,
             String routePic
     ){};
+
+    @Builder
+    public record savedDTO(
+            Long storeId,
+            boolean saved
+    ) {};
 }
