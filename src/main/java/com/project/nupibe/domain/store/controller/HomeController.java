@@ -1,6 +1,7 @@
 package com.project.nupibe.domain.store.controller;
 
 import com.project.nupibe.domain.store.dto.response.HomeResponseDTO;
+import com.project.nupibe.domain.store.service.HomeCommandService;
 import com.project.nupibe.domain.store.service.HomeQueryService;
 import com.project.nupibe.global.apiPayload.CustomResponse;
 import lombok.RequiredArgsConstructor;
@@ -11,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 public class HomeController {
     private final HomeQueryService homeQueryService;
+    private final HomeCommandService homeCommandService;
 
     @GetMapping("/{memberId}")
     public CustomResponse<HomeResponseDTO.GetHomeResponseDTO> getHome(@PathVariable Long memberId) {
@@ -42,5 +44,11 @@ public class HomeController {
             @PathVariable Long memberId, @PathVariable String groupName) {
         HomeResponseDTO.groupStoreDTO stores = homeQueryService.getGroupStore(memberId, groupName);
         return CustomResponse.onSuccess(stores);
+    }
+
+    @PostMapping("/{memberId}/save/{storeId}")
+    public CustomResponse<HomeResponseDTO.savedDTO> saveStore(@PathVariable Long memberId, @PathVariable Long storeId) {
+        HomeResponseDTO.savedDTO saved = homeCommandService.saveStore(memberId, storeId);
+        return CustomResponse.onSuccess(saved);
     }
 }
