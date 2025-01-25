@@ -2,6 +2,8 @@ package com.project.nupibe.domain.route.controller;
 
 
 import com.project.nupibe.domain.route.dto.RouteCreateRequestDto;
+import com.project.nupibe.domain.route.dto.RouteResponseDto;
+import com.project.nupibe.domain.route.dto.RouteStoreDto;
 import com.project.nupibe.domain.route.dto.response.RouteDetailResDTO;
 import com.project.nupibe.domain.route.dto.response.RoutePlacesResDTO;
 import com.project.nupibe.domain.route.service.KakaoNaviService;
@@ -14,6 +16,8 @@ import lombok.RequiredArgsConstructor;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -44,11 +48,9 @@ public class RouteController {
 
     @PostMapping
     @Operation(summary = "최적 경로 요청 API", description = "출발지, 도착지 및 경유지를 포함한 최적 경로를 요청합니다.")
-    public ResponseEntity<?> getOptimalRoute(@RequestBody RouteCreateRequestDto requestDto) {
-        routeService.createRoute(requestDto);
-        return ResponseEntity.ok("경로가 성공적으로 생성되었습니다");
-
-
+    public ResponseEntity<RouteResponseDto> getOptimalRoute(@RequestBody RouteCreateRequestDto requestDto) {
+        RouteResponseDto response = routeService.createRoute(requestDto);
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping("/search")

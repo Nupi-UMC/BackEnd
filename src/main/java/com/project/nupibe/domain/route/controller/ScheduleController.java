@@ -1,5 +1,8 @@
 package com.project.nupibe.domain.route.controller;
 
+import com.project.nupibe.domain.member.entity.Member;
+import com.project.nupibe.domain.member.jwt.JwtTokenProvider;
+import com.project.nupibe.domain.member.repository.MemberRepository;
 import com.project.nupibe.domain.route.dto.RouteCalendarResponseDto;
 import com.project.nupibe.domain.route.dto.RouteDto;
 import com.project.nupibe.domain.route.service.ScheduleService;
@@ -8,12 +11,10 @@ import com.project.nupibe.global.apiPayload.code.GeneralErrorCode;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -27,12 +28,17 @@ import java.util.List;
 @Tag(name="일정 조회 API", description = "달력 일정 조회 및 날짜 일정 조회 API")
 public class ScheduleController {
 
-
     private final ScheduleService scheduleService;
+    private final MemberRepository memberRepository;
+    private final JwtTokenProvider jwtTokenProvider;
 
-    public ScheduleController(ScheduleService scheduleService) {
+
+    public ScheduleController(ScheduleService scheduleService, MemberRepository memberRepository, JwtTokenProvider jwtTokenProvider) {
         this.scheduleService = scheduleService;
+        this.memberRepository = memberRepository;
+        this.jwtTokenProvider = jwtTokenProvider;
     }
+
 
     @GetMapping
     public ResponseEntity<CustomResponse<?>> getScheduleByDate(@RequestParam String date) {
@@ -81,14 +87,32 @@ public class ScheduleController {
             return routes;
         }
     }
+
+
     @Operation(summary = "월별 일정 조회",description = "사용자의 특정 월의 일정이 있는 날짜들을 조회합니다.")
     @GetMapping("/calendar")
     public ResponseEntity<CustomResponse<?>> getDatesWithRoutes(
             @Parameter(description = "조회할 연-월 (yyyy-MM 형식)", example = "2024-12")
             @RequestParam String month,
-            @Parameter(description = "회원 ID", example = "1")
-            @RequestParam Long memberId) {
+            @Parameter(description = "액세스 토큰 조회", example = "액세스 토큰을 넣으면 됩니다")
+            @RequestHeader("Authorization") String authorizationHeader) {
+
+        if (authorizationHeader == null) {
+            return ResponseEntity.badRequest().body(
+                    CustomResponse.onFailure("VALID400_1", "Authorization 헤더가 없습니다.")
+            );
+        }
+
+        System.out.println("Received Authorization Header: " + authorizationHeader);
         try {
+
+            // 액세스 토큰에서 사용자 이메일 추출
+            String token = authorizationHeader.substring(7); // "Bearer " 제거
+            String email = jwtTokenProvider.extractEmail(token);
+
+            // 이메일을 사용하여 멤버 조회
+            Member member = memberRepository.findByEmail(email)
+                    .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
             // 요청받은 month를 LocalDate로 파싱
             YearMonth parsedMonth = YearMonth.parse(month, DateTimeFormatter.ofPattern("yyyy-MM"));
 
@@ -97,7 +121,7 @@ public class ScheduleController {
             LocalDate endDate = parsedMonth.atEndOfMonth(); // 해당 월의 마지막 날
 
             // 서비스 호출
-            List<LocalDate> datesWithRoutes = scheduleService.getDatesWithRoutes(startDate, endDate, memberId);
+            List<LocalDate> datesWithRoutes = scheduleService.getDatesWithRoutes(startDate, endDate, member.getId());
 
             RouteCalendarResponseDto responseDto= new RouteCalendarResponseDto(month,datesWithRoutes);
 
