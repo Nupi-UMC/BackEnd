@@ -54,8 +54,8 @@ public class HomeQueryService {
     public HomeResponseDTO.entertainmentDTO getEntertainment(Long memberId, double latitude, double longitude, int selected, String sort) {
         Member member = memberRepository.findById(memberId).orElseThrow(() -> new MemberException(MemberErrorCode.NOT_FOUND));
 
-        List<String> categories = List.of("굿즈샵", "맛집", "소품샵", "전시", "카페", "테마카페", "팝업");
-        List<HomeResponseDTO.categoryDTO> category = HomeConverter.toCategoryDTO(categories, selected);
+        List<String> categories = List.of("전체", "굿즈샵", "맛집", "소품샵", "전시", "카페", "테마카페", "팝업");
+        HomeResponseDTO.categoryDTO category = HomeConverter.toCategoryDTO(categories, selected);
 
         int sortId = 0;
         switch (sort) {
@@ -86,9 +86,9 @@ public class HomeQueryService {
         }
         else {
             switch(sortId) {
-                case 1: return storeRepository.findCategoryOrderDistance(categories.get(selected - 1), latitude, longitude);
-                case 2: return storeRepository.findCategoryOrderBookmark(categories.get(selected - 1));
-                case 3: return storeRepository.findCategoryOrderRecommend(categories.get(selected - 1));
+                case 1: return storeRepository.findCategoryOrderDistance(categories.get(selected), latitude, longitude);
+                case 2: return storeRepository.findCategoryOrderBookmark(categories.get(selected));
+                case 3: return storeRepository.findCategoryOrderRecommend(categories.get(selected));
             }
         }
         return new ArrayList<Store>();
