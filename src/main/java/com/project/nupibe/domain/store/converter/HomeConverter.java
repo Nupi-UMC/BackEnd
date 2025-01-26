@@ -27,7 +27,7 @@ public class HomeConverter {
         return list;
     }
 
-    public static HomeResponseDTO.entertainmentDTO toEntertainmentDTO(List<HomeResponseDTO.categoryDTO> category,
+    public static HomeResponseDTO.entertainmentDTO toEntertainmentDTO(HomeResponseDTO.categoryDTO category,
                                                                       String sort,
                                                                       List<HomeResponseDTO.storeDTO> stores) {
         return HomeResponseDTO.entertainmentDTO.builder()
@@ -36,33 +36,10 @@ public class HomeConverter {
                 .stores(stores).build();
     }
 
-    public static List<HomeResponseDTO.categoryDTO> toCategoryDTO(List<String> categories, int selected) {
-        List<HomeResponseDTO.categoryDTO> list = new ArrayList<>();
-
-        if(selected == 0) {
-            int i = 1;
-            for(String category : categories) {
-                HomeResponseDTO.categoryDTO temp = HomeResponseDTO.categoryDTO.builder()
-                        .cateogoryId(i)
-                        .category(category)
-                        .selected(true).build();
-                list.add(temp);
-                i++;
-            }
-            return list;
-        }
-        else {
-            int i = 1;
-            for(String category : categories) {
-                HomeResponseDTO.categoryDTO temp = HomeResponseDTO.categoryDTO.builder()
-                        .cateogoryId(i)
-                        .category(category)
-                        .selected(i == selected).build();
-                list.add(temp);
-                i++;
-            }
-            return list;
-        }
+    public static HomeResponseDTO.categoryDTO toCategoryDTO(List<String> categories, int selected) {
+        return HomeResponseDTO.categoryDTO.builder()
+                .category(categories.get(selected))
+                .cateogoryId(selected).build();
     }
 
     public static List<HomeResponseDTO.storeDTO> toStoreDTO(List<Boolean> isFavor, List<Store> stores) {
