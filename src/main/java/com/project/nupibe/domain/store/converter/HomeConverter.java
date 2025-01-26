@@ -96,4 +96,10 @@ public class HomeConverter {
                 .storeId(storeId)
                 .saved(save).build();
     }
+
+    public static HomeResponseDTO.groupStoreDTO toRegionStoreDTO(List<HomeResponseDTO.storeDTO> stores) {
+        return HomeResponseDTO.groupStoreDTO.builder()
+                .stores(stores)
+                .build();
+    }
 }
