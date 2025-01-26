@@ -38,8 +38,7 @@ public class HomeCommandService {
         }
         else {
             Store store = storeRepository.findById(storeId).orElseThrow(() -> new StoreException(StoreErrorCode.NOT_FOUND));
-            store.setBookmarkNum(store.getBookmarkNum() + 1);
-            storeRepository.save(store);
+            store.setBookmarkNum(store.getBookmarkNum() + 1storeRepository.save(store);
 
             MemberStore memberStore = MemberStore.builder().member(member).store(store).build();
             memberStoreRepository.save(memberStore);

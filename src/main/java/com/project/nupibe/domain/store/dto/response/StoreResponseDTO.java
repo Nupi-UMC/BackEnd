@@ -32,4 +32,10 @@ public class StoreResponseDTO {
             boolean hasNext,
             Long cursor
     ){}
+
+    @Builder
+    public record savedDTO(
+            Long storeId,
+            boolean saved
+    ) {};
 }

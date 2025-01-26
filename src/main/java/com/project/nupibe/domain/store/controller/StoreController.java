@@ -1,5 +1,6 @@
 package com.project.nupibe.domain.store.controller;
 
+import com.project.nupibe.domain.store.dto.response.HomeResponseDTO;
 import com.project.nupibe.domain.store.dto.response.StoreResponseDTO;
 import com.project.nupibe.domain.store.service.StoreCommandService;
 import com.project.nupibe.domain.store.service.StoreQueryService;
@@ -31,9 +32,9 @@ public class StoreController {
 
     @PostMapping("{storeId}/bookmark")
     @Operation(method = "POST", summary = "장소 북마크 API", description = "장소 북마크 버튼을 클릭시 작동하는 기능입니다..")
-    public ResponseEntity<String> bookmarkStore(@RequestParam Long memberId, @PathVariable("storeId") Long storeId) {
-        storeCommandService.bookmarkStore(memberId, storeId);
-        return ResponseEntity.ok("Store bookmarked successfully");
+    public CustomResponse<StoreResponseDTO.savedDTO> bookmarkStore(@RequestParam Long memberId, @PathVariable("storeId") Long storeId) {
+        StoreResponseDTO.savedDTO saved = storeCommandService.bookmarkStore(memberId, storeId);
+        return CustomResponse.onSuccess(saved);
     }
 
     @GetMapping("/{storeId}/preview")

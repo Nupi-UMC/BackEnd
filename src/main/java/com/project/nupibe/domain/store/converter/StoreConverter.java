@@ -1,5 +1,6 @@
 package com.project.nupibe.domain.store.converter;
 
+import com.project.nupibe.domain.store.dto.response.HomeResponseDTO;
 import com.project.nupibe.domain.store.dto.response.StoreResponseDTO;
 import com.project.nupibe.domain.store.entity.Store;
 import lombok.AccessLevel;
@@ -51,5 +52,11 @@ public class StoreConverter {
                 .hasNext(stores.hasNext())
                 .cursor(stores.getContent().get(stores.getContent().size() - 1).getId())
                 .build();
+    }
+
+    public static StoreResponseDTO.savedDTO save(Long storeId, boolean save) {
+        return StoreResponseDTO.savedDTO.builder()
+                .storeId(storeId)
+                .saved(save).build();
     }
 }
