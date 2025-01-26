@@ -49,4 +49,9 @@ public class RouteDetailResDTO {
             boolean hasNext,
             Long cursor
     ){}
+    @Builder
+    public record savedDTO(
+            Long routeId,
+            boolean saved
+    ) {};
 }
