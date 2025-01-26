@@ -8,6 +8,8 @@ import com.project.nupibe.domain.member.exception.handler.MemberException;
 import com.project.nupibe.domain.member.repository.MemberRepository;
 import com.project.nupibe.domain.member.repository.MemberStoreRepository;
 import com.project.nupibe.domain.member.repository.StoreLikeRepository;
+import com.project.nupibe.domain.route.entity.RouteStore;
+import com.project.nupibe.domain.route.repository.RouteStoreRepository;
 import com.project.nupibe.domain.store.converter.StoreConverter;
 import com.project.nupibe.domain.store.dto.response.StoreResponseDTO;
 import com.project.nupibe.domain.store.entity.Store;
@@ -17,6 +19,10 @@ import com.project.nupibe.domain.store.repository.StoreRepository;
 import com.project.nupibe.global.apiPayload.code.GeneralErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -25,8 +31,17 @@ public class StoreCommandService {
     private final StoreRepository storeRepository;
     private final MemberStoreRepository memberStoreRepository;
     private final StoreLikeRepository storeLikeRepository;
+    private final RouteStoreRepository routeStoreRepository;
 
+    @Transactional(readOnly = true)
+    public StoreResponseDTO.MemberRouteListDTO getRoutesByStoreId(Long storeId) {
+        // storeId로 RouteStore 리스트 조회
+        List<RouteStore> routeStores = routeStoreRepository.findByStoreId(storeId);
 
+        // List<RouteStore> -> MemberRouteListDTO 변환
+        return StoreConverter.toMemberRouteListDTO(routeStores);
+    }
+    @Transactional(readOnly = true)
     public StoreResponseDTO.savedDTO bookmarkStore(Long memberId, Long storeId) {
         Member member = memberRepository.findById(memberId).orElseThrow(() -> new MemberException(MemberErrorCode.NOT_FOUND));
 

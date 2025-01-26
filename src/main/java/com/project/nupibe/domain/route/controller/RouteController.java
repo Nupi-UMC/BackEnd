@@ -57,4 +57,5 @@ public class RouteController {
         RouteDetailResDTO.savedDTO saved = routeCommandService.likeRoute(memberId, routeId);
         return CustomResponse.onSuccess(saved);
     }
+
 }

@@ -1,5 +1,6 @@
 package com.project.nupibe.domain.store.controller;
 
+import com.project.nupibe.domain.route.service.RouteCommandService;
 import com.project.nupibe.domain.store.dto.response.HomeResponseDTO;
 import com.project.nupibe.domain.store.dto.response.StoreResponseDTO;
 import com.project.nupibe.domain.store.service.StoreCommandService;
@@ -22,13 +23,20 @@ public class StoreController {
     private final StoreQueryService storeQueryService;
     private final StoreCommandService storeCommandService;
 
+
     @GetMapping("{storeId}/detail")
     @Operation(method = "GET", summary = "장소 단일 조회(detail) API", description = "장소 상세페이지 조회입니다.")
     public CustomResponse<StoreResponseDTO.StoreDetailResponseDTO> getStoreDetail(@PathVariable("storeId") Long storeId){
         StoreResponseDTO.StoreDetailResponseDTO responseDTO = storeQueryService.getStoreDetail(storeId);
         return CustomResponse.onSuccess(responseDTO);
     }
-
+    @GetMapping("{storeId}/routes")
+    @Operation(method = "GET", summary = "특정 장소가 포함된 경로 조회", description = "storeId를 사용하여 해당 장소가 포함된 경로들을 조회하는 기능입니다."
+    )
+    public CustomResponse<StoreResponseDTO.MemberRouteListDTO> getRoutesByStoreId(@PathVariable("storeId") Long storeId) {
+        StoreResponseDTO.MemberRouteListDTO routes = storeCommandService.getRoutesByStoreId(storeId);
+        return CustomResponse.onSuccess(routes);
+    }
 
     @PostMapping("{storeId}/bookmark")
     @Operation(method = "POST", summary = "장소 북마크 API", description = "장소 조회 시 북마크 버튼을 클릭시 작동하는 기능입니다..")

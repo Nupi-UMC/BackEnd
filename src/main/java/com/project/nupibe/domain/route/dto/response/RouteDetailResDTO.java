@@ -54,4 +54,17 @@ public class RouteDetailResDTO {
             Long routeId,
             boolean saved
     ) {};
+
+    @Builder
+    public record RouteStoreResponseDTO(
+            Long routeId,
+            String routeName,
+            String location,
+            int likeNum,
+            int bookmarkNum,
+            List<String> images
+    ) {}
+
+
+
 }

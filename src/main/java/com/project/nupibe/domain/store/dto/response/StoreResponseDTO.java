@@ -5,6 +5,22 @@ import lombok.Builder;
 import java.util.List;
 
 public class StoreResponseDTO {
+
+    @Builder
+    public static record MemberRouteDTO (
+            Long routeId,
+            String routeName,
+            String location,
+            int likeNum,
+            int bookmarkNum,
+            List<String> images
+    ){}
+    @Builder
+    public static record MemberRouteListDTO (
+            List<MemberRouteDTO> routes
+
+    ){}
+
     @Builder
     public record StoreDetailResponseDTO (
             Long id,
