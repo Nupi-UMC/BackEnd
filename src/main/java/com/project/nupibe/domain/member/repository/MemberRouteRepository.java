@@ -20,4 +20,6 @@ public interface MemberRouteRepository extends CrudRepository<MemberRoute, Long>
     @Query("SELECT ms FROM MemberRoute ms WHERE ms.member = :member and ms.route = :route")
     MemberRoute findByMemberandRoute(@Param("member") Member member, @Param("route") Route route);
 
+    @Query("SELECT ms.route FROM MemberRoute ms WHERE ms.member.id = :memberId")
+    List<Route> findRoutesByMemberId(@Param("memberId") Long memberId);
 }
