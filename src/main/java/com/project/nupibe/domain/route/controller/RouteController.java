@@ -46,9 +46,15 @@ public class RouteController {
     }
 
     @PostMapping("{routeId}/bookmark")
-    @Operation(method = "POST", summary = "루트 북마크 API", description = "경로 조회 내 북마크 버튼을 클릭시 작동하는 기능입니다.")
+    @Operation(method = "POST", summary = "경로 북마크 API", description = "경로 조회 내 북마크 버튼을 클릭시 작동하는 기능입니다.")
     public CustomResponse<RouteDetailResDTO.savedDTO> bookmarkRoute(@RequestParam Long memberId, @PathVariable("routeId") Long routeId) {
         RouteDetailResDTO.savedDTO saved = routeCommandService.bookmarkRoute(memberId, routeId);
+        return CustomResponse.onSuccess(saved);
+    }
+    @PostMapping("{routeId}/like")
+    @Operation(method = "POST", summary = "경로 좋아요 API", description = "경로 조회 내 좋아요 버튼을 클릭시 작동하는 기능입니다.")
+    public CustomResponse<RouteDetailResDTO.savedDTO> likeRoute(@RequestParam Long memberId, @PathVariable("routeId") Long routeId) {
+        RouteDetailResDTO.savedDTO saved = routeCommandService.likeRoute(memberId, routeId);
         return CustomResponse.onSuccess(saved);
     }
 }

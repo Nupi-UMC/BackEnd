@@ -51,4 +51,7 @@ public class Route extends BaseEntity {
     public void setBookmarkNum(int i) {
         this.bookmarkNum = i;
     }
+    public void setLikeNum(int i) {
+        this.likeNum = i;
+    }
 }

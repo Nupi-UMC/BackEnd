@@ -31,9 +31,15 @@ public class StoreController {
 
 
     @PostMapping("{storeId}/bookmark")
-    @Operation(method = "POST", summary = "장소 북마크 API", description = "장소 북마크 버튼을 클릭시 작동하는 기능입니다..")
+    @Operation(method = "POST", summary = "장소 북마크 API", description = "장소 조회 시 북마크 버튼을 클릭시 작동하는 기능입니다..")
     public CustomResponse<StoreResponseDTO.savedDTO> bookmarkStore(@RequestParam Long memberId, @PathVariable("storeId") Long storeId) {
         StoreResponseDTO.savedDTO saved = storeCommandService.bookmarkStore(memberId, storeId);
+        return CustomResponse.onSuccess(saved);
+    }
+    @PostMapping("{storeId}/like")
+    @Operation(method = "POST", summary = "장소 좋아요 API", description = "장소 조회 시 좋아요 버튼을 클릭시 작동하는 기능입니다.")
+    public CustomResponse<StoreResponseDTO.savedDTO> likeStore(@RequestParam Long memberId, @PathVariable("storeId") Long storeId) {
+        StoreResponseDTO.savedDTO saved = storeCommandService.likeStore(memberId, storeId);
         return CustomResponse.onSuccess(saved);
     }
 
