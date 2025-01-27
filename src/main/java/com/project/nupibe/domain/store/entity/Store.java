@@ -1,5 +1,7 @@
 package com.project.nupibe.domain.store.entity;
 
+import com.project.nupibe.domain.region.entity.Region;
+import com.project.nupibe.domain.route.entity.Route;
 import com.project.nupibe.global.entity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
@@ -61,6 +63,10 @@ public class Store extends BaseEntity {
 
     @Column(columnDefinition = "geometry(Point, 4326)")
     private Point coordinates; // PostGIS Point 타입
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "region_id", nullable = false)
+    private Region region;
 
     public void setBookmarkNum(int i) {
         this.bookmarkNum = i;

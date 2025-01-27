@@ -76,6 +76,30 @@ public class HomeQueryService {
         return HomeConverter.toEntertainmentDTO(category, sort, storeList);
     }
 
+    public HomeResponseDTO.groupStoreDTO getRegionStore(Long memberId, Long regionId, double latitude, double longitude, int selected, String sort) {
+        Member member = memberRepository.findById(memberId).orElseThrow(() -> new MemberException(MemberErrorCode.NOT_FOUND));
+
+        List<String> categories = List.of("전체", "굿즈샵", "맛집", "소품샵", "전시", "카페", "테마카페", "팝업");
+        HomeResponseDTO.categoryDTO category = HomeConverter.toCategoryDTO(categories, selected);
+
+        int sortId = 0;
+        switch (sort) {
+            case "default": sortId = 1; break;
+            case "bookmark": sortId = 2; break;
+            case "recommend": sortId = 3; break;
+        }
+
+        List<Store> stores = getStoreByConditionsAndRegion(categories, regionId, selected, sortId, latitude, longitude);
+
+        List<Boolean> isFavors = new ArrayList<>();
+        for(Store store : stores) {
+            boolean isFavor = memberStoreRepository.existsByMemberIdAndStoreId(member.getId(), store.getId());
+            isFavors.add(isFavor);
+        }
+        List<HomeResponseDTO.storeDTO> storeList = HomeConverter.toStoreDTO(isFavors, stores);
+        return HomeConverter.toRegionStoreDTO(storeList);
+    }
+
     private List<Store> getStoreByConditions(List<String> categories, int selected, int sortId, double latitude, double longitude) {
         if(selected == 0) {
             switch(sortId) {
@@ -89,6 +113,24 @@ public class HomeQueryService {
                 case 1: return storeRepository.findCategoryOrderDistance(categories.get(selected), latitude, longitude);
                 case 2: return storeRepository.findCategoryOrderBookmark(categories.get(selected));
                 case 3: return storeRepository.findCategoryOrderRecommend(categories.get(selected));
+            }
+        }
+        return new ArrayList<Store>();
+    }
+
+    private List<Store> getStoreByConditionsAndRegion(List<String> categories, long regionId, int selected, int sortId, double latitude, double longitude) {
+        if(selected == 0) {
+            switch(sortId) {
+                case 1: return storeRepository.findAllOrderDistanceAndRegion(latitude, longitude, regionId);
+                case 2: return storeRepository.findAllOrderBookmarkAndRegion(regionId);
+                case 3: return storeRepository.findAllOrderRecommendAndRegion(regionId);
+            }
+        }
+        else {
+            switch(sortId) {
+                case 1: return storeRepository.findCategoryOrderDistanceAndRegion(categories.get(selected), latitude, longitude, regionId);
+                case 2: return storeRepository.findCategoryOrderBookmarkAndRegion(categories.get(selected), regionId);
+                case 3: return storeRepository.findCategoryOrderRecommendAndRegion(categories.get(selected), regionId);
             }
         }
         return new ArrayList<Store>();
