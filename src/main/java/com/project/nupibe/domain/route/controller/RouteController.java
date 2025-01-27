@@ -2,7 +2,9 @@ package com.project.nupibe.domain.route.controller;
 
 import com.project.nupibe.domain.route.dto.response.RouteDetailResDTO;
 import com.project.nupibe.domain.route.dto.response.RoutePlacesResDTO;
+import com.project.nupibe.domain.route.service.RouteCommandService;
 import com.project.nupibe.domain.route.service.query.RouteQueryService;
+import com.project.nupibe.domain.store.dto.response.StoreResponseDTO;
 import com.project.nupibe.global.apiPayload.CustomResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -16,6 +18,7 @@ import org.springframework.web.bind.annotation.*;
 public class RouteController {
 
     private final RouteQueryService routeQueryService;
+    private final RouteCommandService routeCommandService;
 
     @GetMapping("/{routeId}")
     @Operation(summary = "경로 상세 조회 API", description = "PathVariable로 보낸 id의 경로를 상세 조회 합니다.")
@@ -41,4 +44,18 @@ public class RouteController {
         RouteDetailResDTO.RoutePageResponse result = routeQueryService.getRoutesWithQuery(query, cursor, offset);
         return CustomResponse.onSuccess(result);
     }
+
+    @PostMapping("{routeId}/bookmark")
+    @Operation(method = "POST", summary = "경로 북마크 API", description = "경로 조회 내 북마크 버튼을 클릭시 작동하는 기능입니다.")
+    public CustomResponse<RouteDetailResDTO.savedDTO> bookmarkRoute(@RequestParam Long memberId, @PathVariable("routeId") Long routeId) {
+        RouteDetailResDTO.savedDTO saved = routeCommandService.bookmarkRoute(memberId, routeId);
+        return CustomResponse.onSuccess(saved);
+    }
+    @PostMapping("{routeId}/like")
+    @Operation(method = "POST", summary = "경로 좋아요 API", description = "경로 조회 내 좋아요 버튼을 클릭시 작동하는 기능입니다.")
+    public CustomResponse<RouteDetailResDTO.savedDTO> likeRoute(@RequestParam Long memberId, @PathVariable("routeId") Long routeId) {
+        RouteDetailResDTO.savedDTO saved = routeCommandService.likeRoute(memberId, routeId);
+        return CustomResponse.onSuccess(saved);
+    }
+
 }

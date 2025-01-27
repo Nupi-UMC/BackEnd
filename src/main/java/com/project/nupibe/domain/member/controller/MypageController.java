@@ -37,5 +37,12 @@ public class MypageController {
         return CustomResponse.onSuccess(responseDto);
     }
 
+    @Operation(method = "GET",summary = "사용자 저장 경로 조회", description = "memberId값을 가지고 저장한 경로들의 목록을 조회합니다.")
+    @GetMapping("{memberId}/routes")
+    public CustomResponse<MypageResponseDTO.MypageRoutesDTO> getBookmarkRoute(@PathVariable("memberId") Long id){
+        MypageResponseDTO.MypageRoutesDTO responseDto = mypageService.getMemberRoute(id);
+        return CustomResponse.onSuccess(responseDto);
+    }
+
 
 }
