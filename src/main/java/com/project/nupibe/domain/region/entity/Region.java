@@ -15,4 +15,6 @@ public class Region {
 
     @Column(nullable = false)
     String name;
+
+
 }

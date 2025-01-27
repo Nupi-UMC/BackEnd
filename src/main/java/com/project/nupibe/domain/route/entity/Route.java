@@ -47,4 +47,11 @@ public class Route extends BaseEntity {
 
     @Column(name="category", nullable = false)
     private String category;
+
+    public void setBookmarkNum(int i) {
+        this.bookmarkNum = i;
+    }
+    public void setLikeNum(int i) {
+        this.likeNum = i;
+    }
 }

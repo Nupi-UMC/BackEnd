@@ -5,6 +5,7 @@ import com.project.nupibe.domain.route.dto.response.RoutePlacesResDTO;
 import com.project.nupibe.domain.route.dto.response.RouteStoreDTO;
 import com.project.nupibe.domain.route.entity.Route;
 import com.project.nupibe.domain.route.entity.RouteStore;
+import com.project.nupibe.domain.store.dto.response.StoreResponseDTO;
 import org.springframework.data.domain.Slice;
 
 import java.util.List;
@@ -96,5 +97,11 @@ public class RouteConverter {
                 .hasNext(routes.hasNext())
                 .cursor(routes.getContent().get(routes.getContent().size() - 1).getId())
                 .build();
+    }
+
+    public static RouteDetailResDTO.savedDTO save(Long routeId, boolean save) {
+        return RouteDetailResDTO.savedDTO.builder()
+                .routeId(routeId)
+                .saved(save).build();
     }
 }
