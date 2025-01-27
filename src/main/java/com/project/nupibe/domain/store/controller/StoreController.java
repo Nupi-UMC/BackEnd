@@ -29,13 +29,25 @@ public class StoreController {
         StoreResponseDTO.StoreDetailResponseDTO responseDTO = storeQueryService.getStoreDetail(storeId);
         return CustomResponse.onSuccess(responseDTO);
     }
-
+    @GetMapping("{storeId}/routes")
+    @Operation(method = "GET", summary = "특정 장소가 포함된 경로 조회", description = "storeId를 사용하여 해당 장소가 포함된 경로들을 조회하는 기능입니다."
+    )
+    public CustomResponse<StoreResponseDTO.MemberRouteListDTO> getRoutesByStoreId(@PathVariable("storeId") Long storeId) {
+        StoreResponseDTO.MemberRouteListDTO routes = storeCommandService.getRoutesByStoreId(storeId);
+        return CustomResponse.onSuccess(routes);
+    }
 
     @PostMapping("{storeId}/bookmark")
-    @Operation(method = "POST", summary = "장소 북마크 API", description = "장소 북마크 버튼을 클릭시 작동하는 기능입니다..")
-    public ResponseEntity<String> bookmarkStore(@RequestParam Long memberId, @PathVariable("storeId") Long storeId) {
-        storeCommandService.bookmarkStore(memberId, storeId);
-        return ResponseEntity.ok("Store bookmarked successfully");
+    @Operation(method = "POST", summary = "장소 북마크 API", description = "장소 조회 시 북마크 버튼을 클릭시 작동하는 기능입니다..")
+    public CustomResponse<StoreResponseDTO.savedDTO> bookmarkStore(@RequestParam Long memberId, @PathVariable("storeId") Long storeId) {
+        StoreResponseDTO.savedDTO saved = storeCommandService.bookmarkStore(memberId, storeId);
+        return CustomResponse.onSuccess(saved);
+    }
+    @PostMapping("{storeId}/like")
+    @Operation(method = "POST", summary = "장소 좋아요 API", description = "장소 조회 시 좋아요 버튼을 클릭시 작동하는 기능입니다.")
+    public CustomResponse<StoreResponseDTO.savedDTO> likeStore(@RequestParam Long memberId, @PathVariable("storeId") Long storeId) {
+        StoreResponseDTO.savedDTO saved = storeCommandService.likeStore(memberId, storeId);
+        return CustomResponse.onSuccess(saved);
     }
 
     @GetMapping("/{storeId}/preview")
