@@ -12,7 +12,11 @@ public enum StoreErrorCode implements BaseErrorCode {
                     "가게를 찾을 수 없습니다."),
     ALREADY_EXISTS(HttpStatus.CONFLICT,
             "STORE409",
-            "이미 가게가 존재합니다.");
+            "이미 가게가 존재합니다."),
+    UNSUPPORTED_QUERY(HttpStatus.BAD_REQUEST,
+            "STORE401",
+            "지원하지 않는 쿼리입니다.")
+    ;
 
 
 
