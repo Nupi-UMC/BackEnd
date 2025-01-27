@@ -23,6 +23,17 @@ public class MypageResponseDTO{
             List<MemberStoreDTO> bookmarkedStores
     ){}
 
+    @Builder
+    public record MemberRouteDTO (
+            String name,
+            String location
+    ){}
+
+    @Builder
+    public record MypageRoutesDTO (
+            List<MemberRouteDTO> bookmarkedRoutes
+    ){}
+
 
 
 }

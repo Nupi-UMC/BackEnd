@@ -23,7 +23,7 @@ public class HomeResponseDTO {
 
     @Builder
     public record entertainmentDTO(
-            List<categoryDTO> category,
+            categoryDTO category,
             String sort,
             List<storeDTO> stores
     ) {};
@@ -36,8 +36,7 @@ public class HomeResponseDTO {
     @Builder
     public record categoryDTO(
             int cateogoryId,
-            String category,
-            boolean selected
+            String category
     ) {};
 
     @Builder

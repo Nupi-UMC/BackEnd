@@ -51,4 +51,14 @@ public class HomeController {
         HomeResponseDTO.savedDTO saved = homeCommandService.saveStore(memberId, storeId);
         return CustomResponse.onSuccess(saved);
     }
+
+    @GetMapping("/{memberId}/{regionId}")
+    public CustomResponse<HomeResponseDTO.groupStoreDTO> getRegionStore(
+            @PathVariable Long memberId, @PathVariable Long regionId,
+            @RequestParam double latitude, @RequestParam double longitude,
+            @RequestParam(value = "category", required = false, defaultValue = "0") int category,
+            @RequestParam(value = "sort", required = false, defaultValue = "default") String sort ) {
+        HomeResponseDTO.groupStoreDTO stores = homeQueryService.getRegionStore(memberId, regionId, latitude, longitude, category, sort);
+        return CustomResponse.onSuccess(stores);
+    }
 }

@@ -71,4 +71,22 @@ public interface StoreRepository extends JpaRepository<Store, Long> {
 
     @Query("SELECT s FROM Store s WHERE s.groupInfo = :groupName")
     List<Store> findByGroupName(@Param("groupName") String groupName);
+
+    @Query("SELECT s FROM Store s WHERE s.region.id = :regionId ORDER BY ST_Distance(ST_MakePoint(s.longitude, s.latitude), ST_MakePoint(:longitude, :latitude))")
+    List<Store> findAllOrderDistanceAndRegion(@Param("latitude") double latitude, @Param("longitude") double longitude, @Param("regionId") long regionId);
+
+    @Query("SELECT s FROM Store s WHERE s.region.id = :regionId ORDER BY s.bookmarkNum")
+    List<Store> findAllOrderBookmarkAndRegion(@Param("regionId") long regionId);
+
+    @Query("SELECT s FROM Store s WHERE s.region.id = :regionId ORDER BY s.bookmarkNum")
+    List<Store> findAllOrderRecommendAndRegion(@Param("regionId") long regionId);
+
+    @Query("SELECT s FROM Store s WHERE s.category = :category AND s.region.id = :regionId ORDER BY ST_Distance(ST_MakePoint(s.longitude, s.latitude), ST_MakePoint(:longitude, :latitude))")
+    List<Store> findCategoryOrderDistanceAndRegion(@Param("category") String category, @Param("latitude") double latitude, @Param("longitude") double longitude, @Param("regionId") long regionId);
+
+    @Query("SELECT s FROM Store s WHERE s.category = :category AND s.region.id = :regionId ORDER BY s.bookmarkNum")
+    List<Store> findCategoryOrderBookmarkAndRegion(@Param("category") String category, @Param("regionId") long regionId);
+
+    @Query("SELECT s FROM Store s WHERE s.category = :category AND s.region.id = :regionId ORDER BY s.bookmarkNum")
+    List<Store> findCategoryOrderRecommendAndRegion(@Param("category") String category, @Param("regionId") long regionId);
 }
