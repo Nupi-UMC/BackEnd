@@ -10,6 +10,7 @@ import org.springframework.http.HttpStatus;
 public enum RouteErrorCode implements BaseErrorCode {
 
     ROUTE_NOT_FOUND(HttpStatus.NOT_FOUND, "Route404_0", "해당 경로를 찾을 수 없습니다."),
+    UNSUPPORTED_QUERY(HttpStatus.BAD_REQUEST, "Route401", "지원하지 않는 쿼리입니다.")
     ;
 
     private final HttpStatus status;

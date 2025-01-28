@@ -16,13 +16,11 @@ import com.project.nupibe.domain.store.entity.Store;
 import com.project.nupibe.domain.store.exception.code.StoreErrorCode;
 import com.project.nupibe.domain.store.exception.handler.StoreException;
 import com.project.nupibe.domain.store.repository.StoreRepository;
-import com.project.nupibe.global.apiPayload.code.GeneralErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor

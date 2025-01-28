@@ -5,9 +5,15 @@ import com.project.nupibe.domain.route.dto.response.RouteDetailResDTO;
 import com.project.nupibe.domain.route.dto.response.RoutePlacesResDTO;
 import com.project.nupibe.domain.route.dto.response.RouteStoreDTO;
 import com.project.nupibe.domain.route.entity.Route;
+import com.project.nupibe.domain.route.entity.RouteSearchQuery;
 import com.project.nupibe.domain.route.exception.RouteErrorCode;
 import com.project.nupibe.domain.route.exception.RouteException;
 import com.project.nupibe.domain.route.repository.RouteRepository;
+import com.project.nupibe.domain.store.converter.StoreConverter;
+import com.project.nupibe.domain.store.dto.response.StoreResponseDTO;
+import com.project.nupibe.domain.store.entity.StoreSearchQuery;
+import com.project.nupibe.domain.store.exception.code.StoreErrorCode;
+import com.project.nupibe.domain.store.exception.handler.StoreException;
 import com.project.nupibe.domain.store.repository.StoreRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
@@ -88,11 +94,51 @@ public class RouteQueryService {
     }
 
     //경로 검색 조회
-    public RouteDetailResDTO.RoutePageResponse getRoutesWithQuery(String query, int cursor, int offset){
-        Pageable pageable = PageRequest.of(cursor, offset);
-        Slice<Route> routes = routeRepository.findByQuery(pageable, query);
+    public RouteDetailResDTO.RoutePageResponse getRoutesWithQuery(String query, float lat, float lng, String search, Long cursor, int offset){
+        Pageable pageable = PageRequest.of(0, offset);
+        Slice<Route> routes;
 
-        // routes가 비어있는지 확인하고 빈 리스트일 경우 처리
+        String enumQuery;
+        switch (query) {
+            case "거리순":
+                enumQuery = RouteSearchQuery.DISTANCE.name();
+                break;
+            case "북마크순":
+                enumQuery = RouteSearchQuery.BOOKMARKNUM.name();
+                break;
+            case "추천순":
+                enumQuery = RouteSearchQuery.RECOMMEND.name();
+                break;
+            default:
+                throw new StoreException(StoreErrorCode.UNSUPPORTED_QUERY);
+        }
+
+        if (enumQuery.equals(RouteSearchQuery.DISTANCE.name())) {
+            if (cursor.equals(0L)) {
+                routes = routeRepository.findBySearchOrderByDistanceDesc(pageable, lat, lng, search);
+            } else {
+                routes = routeRepository.findBySearchOrderByDistanceWithCursor(cursor, pageable, lat, lng, search);
+            }
+        }
+        else if (enumQuery.equals(RouteSearchQuery.BOOKMARKNUM.name())) {
+            if (cursor.equals(0L)) {
+                routes = routeRepository.findBySearchOrderByBOOKMARKNUMAscIdAsc(pageable, search);
+            } else {
+                routes = routeRepository.findBySearchOrderByBOOKMARKNUMWithCursor(cursor, pageable, search);
+            }
+        }
+        else if (enumQuery.equals(RouteSearchQuery.RECOMMEND.name())) {
+            if (cursor.equals(0L)) {
+                routes = routeRepository.findBySearchOrderByLikeNumAscIdAsc(pageable, search);
+            } else {
+                routes = routeRepository.findBySearchOrderByLikeNumWithCursor(cursor, pageable, search);
+            }
+        }
+        else {
+            throw new RouteException(RouteErrorCode.UNSUPPORTED_QUERY);
+        }
+
+        //stores가 비어있는지 확인하고 빈 리스트일 경우 처리
         if (routes.isEmpty()) {
             return new RouteDetailResDTO.RoutePageResponse(new ArrayList<>(), false,0L); // 빈 리스트로 초기화
         }

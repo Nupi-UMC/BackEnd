@@ -3,10 +3,10 @@ package com.project.nupibe.domain.store.service;
 import com.project.nupibe.domain.store.converter.StoreConverter;
 import com.project.nupibe.domain.store.dto.response.StoreResponseDTO;
 import com.project.nupibe.domain.store.entity.Store;
+import com.project.nupibe.domain.store.entity.StoreSearchQuery;
 import com.project.nupibe.domain.store.exception.code.StoreErrorCode;
 import com.project.nupibe.domain.store.exception.handler.StoreException;
-import com.project.nupibe.domain.store.repository.StoreRepositroy;
-import com.project.nupibe.global.apiPayload.code.GeneralErrorCode;
+import com.project.nupibe.domain.store.repository.StoreRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -20,27 +20,70 @@ import java.util.ArrayList;
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class StoreQueryService {
-    private final StoreRepositroy storeRepositroy;
-    private final int RADIUS = 3000; //3km 반경에 있는 가게 조회
+    private final StoreRepository storeRepository;
+    private final int RADIUS = 1000; //1km 반경에 있는 가게 조회
 
     //단일 가게 조회(detail)
     public StoreResponseDTO.StoreDetailResponseDTO getStoreDetail(Long storeId) {
-        Store store = storeRepositroy.findById(storeId)
+        Store store = storeRepository.findById(storeId)
                 .orElseThrow(() -> new StoreException(StoreErrorCode.NOT_FOUND));
         return StoreConverter.toStoreDetailResponseDTO(store);
     }
 
     //단일 가게 조회(preview)
     public StoreResponseDTO.StorePreviewDTO getStorePreview(Long storeId){
-        Store store = storeRepositroy.findById(storeId)
+        Store store = storeRepository.findById(storeId)
                 .orElseThrow(()-> new StoreException(StoreErrorCode.NOT_FOUND));
         return StoreConverter.toStorePreviewDto(store);
     }
 
     //내 위치 주변 가게 조회
-    public StoreResponseDTO.StorePageDTO getStores(Float lat, Float lng, int cursor, int offset){
-        Pageable pageable = PageRequest.of(cursor, offset);
-        Slice<Store> stores = storeRepositroy.findByEarthDistance(pageable,lat, lng, RADIUS);
+    public StoreResponseDTO.StorePageDTO getStores(String query, float lat, float lng, Long cursor, int offset){
+        Pageable pageable = PageRequest.of(0, offset);
+        Slice<Store> stores;
+
+        String enumQuery;
+        switch (query) {
+            case "거리순":
+                enumQuery = StoreSearchQuery.DISTANCE.name();
+                break;
+            case "북마크순":
+                enumQuery = StoreSearchQuery.BOOKMARKNUM.name();
+                break;
+            case "추천순":
+                enumQuery = StoreSearchQuery.RECOMMEND.name();
+                break;
+            default:
+                throw new StoreException(StoreErrorCode.UNSUPPORTED_QUERY);
+        }
+
+        if (enumQuery.equals(StoreSearchQuery.DISTANCE.name())) {
+            if (cursor.equals(0L)) {
+                stores = storeRepository.findAroundOrderByDistanceAscIdAsc(pageable,lat, lng, RADIUS);
+            }
+            else{
+                stores = storeRepository.findAroundOrderByDistanceWithCursor(cursor, pageable,lat, lng, RADIUS);
+            }
+        }
+        else if (enumQuery.equals(StoreSearchQuery.BOOKMARKNUM.name())) {
+            if (cursor.equals(0L)) {
+                stores = storeRepository.findAroundOrderByBOOKMARKNUMAscIdAsc(pageable,lat, lng, RADIUS);
+            }
+            else{
+                stores = storeRepository.findAroundOrderByBOOKMARKNUMWithCursor(cursor, pageable,lat, lng, RADIUS);
+            }
+        }
+        else if (enumQuery.equals(StoreSearchQuery.RECOMMEND.name())) {
+            if (cursor.equals(0L)) {
+                stores = storeRepository.findAroundOrderByLikeNumAscIdAsc(pageable,lat, lng, RADIUS);
+            }
+            else{
+                stores = storeRepository.findAroundOrderByLikeNumWithCursor(cursor, pageable,lat, lng, RADIUS);
+            }
+        }
+        else {
+            throw new StoreException(StoreErrorCode.UNSUPPORTED_QUERY);
+        }
 
         // stores가 비어있는지 확인하고 빈 리스트일 경우 처리
         if (stores.isEmpty()) {
@@ -52,11 +95,51 @@ public class StoreQueryService {
     }
 
     //장소 검색 조회
-    public StoreResponseDTO.StorePageDTO getStoresWithQuery(String query, int cursor, int offset){
-        Pageable pageable = PageRequest.of(cursor, offset);
-        Slice<Store> stores = storeRepositroy.findByQuery(pageable, query);
+    public StoreResponseDTO.StorePageDTO getStoresWithQuery(String query, float lat, float lng, String search, Long cursor, int offset){
+        Pageable pageable = PageRequest.of(0, offset);
+        Slice<Store> stores;
 
-        // stores가 비어있는지 확인하고 빈 리스트일 경우 처리
+        String enumQuery;
+        switch (query) {
+            case "거리순":
+                enumQuery = StoreSearchQuery.DISTANCE.name();
+                break;
+            case "북마크순":
+                enumQuery = StoreSearchQuery.BOOKMARKNUM.name();
+                break;
+            case "추천순":
+                enumQuery = StoreSearchQuery.RECOMMEND.name();
+                break;
+            default:
+                throw new StoreException(StoreErrorCode.UNSUPPORTED_QUERY);
+        }
+
+        if (enumQuery.equals(StoreSearchQuery.DISTANCE.name())) {
+            if (cursor.equals(0L)) {
+                stores = storeRepository.findBySearchOrderByDistanceAscIdAsc(pageable, lat, lng, search);
+            } else {
+                stores = storeRepository.findBySearchOrderByDistanceWithCursor(cursor, pageable, lat, lng, search);
+            }
+        }
+        else if (enumQuery.equals(StoreSearchQuery.BOOKMARKNUM.name())) {
+            if (cursor.equals(0L)) {
+                stores = storeRepository.findBySearchOrderByBOOKMARKNUMAscIdAsc(pageable, search);
+            } else {
+                stores = storeRepository.findBySearchOrderByBOOKMARKNUMWithCursor(cursor, pageable, search);
+            }
+        }
+        else if (enumQuery.equals(StoreSearchQuery.RECOMMEND.name())) {
+            if (cursor.equals(0L)) {
+                stores = storeRepository.findBySearchOrderByLikeNumAscIdAsc(pageable, search);
+            } else {
+                stores = storeRepository.findBySearchOrderByLikeNumWithCursor(cursor, pageable, search);
+            }
+        }
+        else {
+            throw new StoreException(StoreErrorCode.UNSUPPORTED_QUERY);
+        }
+
+         //stores가 비어있는지 확인하고 빈 리스트일 경우 처리
         if (stores.isEmpty()) {
             return new StoreResponseDTO.StorePageDTO(new ArrayList<>(), false,0L); // 빈 리스트로 초기화
         }
