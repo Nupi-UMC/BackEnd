@@ -71,6 +71,11 @@ dependencies {
 
     // JavaMailSender
     implementation 'org.springframework.boot:spring-boot-starter-mail'
+
+    // 카카오 api 관련 의존성 설정
+    implementation 'com.fasterxml.jackson.core:jackson-databind'
+
+
 }
 
 tasks.named('test') {
