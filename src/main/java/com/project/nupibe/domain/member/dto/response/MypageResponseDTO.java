@@ -14,8 +14,10 @@ public class MypageResponseDTO{
 
     @Builder
     public record MemberStoreDTO (
+            Long storeId,
             String name,
-            String location
+            String location,
+            String storePic
     ){}
 
     @Builder

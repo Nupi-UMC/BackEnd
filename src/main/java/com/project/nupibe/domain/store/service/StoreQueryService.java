@@ -9,6 +9,7 @@ import com.project.nupibe.domain.member.repository.StoreLikeRepository;
 import com.project.nupibe.domain.store.converter.StoreConverter;
 import com.project.nupibe.domain.store.dto.response.StoreResponseDTO;
 import com.project.nupibe.domain.store.entity.Store;
+import com.project.nupibe.domain.store.entity.StoreImage;
 import com.project.nupibe.domain.store.entity.StoreSearchQuery;
 import com.project.nupibe.domain.store.exception.code.StoreErrorCode;
 import com.project.nupibe.domain.store.exception.handler.StoreException;
@@ -21,6 +22,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional(readOnly = true)
@@ -49,8 +52,12 @@ public class StoreQueryService {
             // 북마크 여부 확인
             isBookmarked = memberStoreRepository.existsByMemberIdAndStoreId(memberId, storeId);
         }
+        // 이미지 URL 리스트 생성
+        List<String> images = store.getImages().stream()
+                .map(StoreImage::getImageUrl)
+                .collect(Collectors.toList());
 
-        return StoreConverter.toStoreDetailResponseDTO(store, isLiked, isBookmarked);
+        return StoreConverter.toStoreDetailResponseDTO(store, isLiked, isBookmarked, images);
     }
 
     //단일 가게 조회(preview)

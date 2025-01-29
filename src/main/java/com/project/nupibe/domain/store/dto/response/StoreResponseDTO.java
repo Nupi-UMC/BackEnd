@@ -26,12 +26,12 @@ public class StoreResponseDTO {
             Long id,
             String name,
             String content,
-            String image,
+            List<String> images,
             String category,
             Integer like_num,
             Integer bookmark_num,
-            boolean isLiked,
-            boolean isBookmarked
+            Boolean isLiked,
+            Boolean isBookmarked
     ) {}
     @Builder
     public record StorePreviewDTO(

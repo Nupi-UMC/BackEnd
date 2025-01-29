@@ -6,6 +6,9 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.locationtech.jts.geom.Point;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Entity
 @Getter
 @Setter
@@ -70,6 +73,9 @@ public class Store extends BaseEntity {
 
     @Column(columnDefinition = "geography(Point, 4326)")
     private Point coordinates1; // PostGIS Point 타입
+
+    @OneToMany(mappedBy = "store", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<StoreImage> images = new ArrayList<>();
 
     public void setBookmarkNum(int i) {
         this.bookmarkNum = i;

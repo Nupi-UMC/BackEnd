@@ -26,8 +26,10 @@ public class MemberConverter {
     // Store Entity -> MemberStoreDTO
     public static MypageResponseDTO.MemberStoreDTO toMemberStoreDTO(Store store) {
         return MypageResponseDTO.MemberStoreDTO.builder()
+                .storeId(store.getId())
                 .name(store.getName())
                 .location(store.getLocation())
+                .storePic(store.getImage())
                 .build();
     }
 

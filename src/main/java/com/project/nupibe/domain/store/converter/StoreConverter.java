@@ -19,12 +19,13 @@ public class StoreConverter {
     public static StoreResponseDTO.StoreDetailResponseDTO toStoreDetailResponseDTO(
             Store store,
             boolean isLiked,
-            boolean isBookmarked) {
+            boolean isBookmarked,
+            List<String> images) {
         return StoreResponseDTO.StoreDetailResponseDTO.builder()
                 .id(store.getId())
                 .name(store.getName())
                 .content(store.getContent())
-                .image(store.getImage())
+                .images(images) // 여러 이미지 추가
                 .category(store.getCategory())
                 .like_num(store.getLikeNum())
                 .bookmark_num(store.getBookmarkNum())

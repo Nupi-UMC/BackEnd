@@ -29,8 +29,8 @@ public class MypageController {
 
     @Operation(method = "GET",summary = "사용자 저장 장소 조회", description = "memberId값을 가지고 저장한 장소들의 목록을 조회합니다.")
     @GetMapping("{memberId}/stores")
-    public CustomResponse<MypageResponseDTO.MypageStoresDTO> getBookmarkStore(@PathVariable("memberId") Long id){
-        MypageResponseDTO.MypageStoresDTO responseDto = mypageService.getMemberStore(id);
+    public CustomResponse<MypageResponseDTO.MypageStoresDTO> getBookmarkStore(@PathVariable("memberId") Long memberId){
+        MypageResponseDTO.MypageStoresDTO responseDto = mypageService.getMemberStore(memberId);
         return CustomResponse.onSuccess(responseDto);
     }
 
