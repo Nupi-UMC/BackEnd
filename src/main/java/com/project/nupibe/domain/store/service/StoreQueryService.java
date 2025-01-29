@@ -32,7 +32,6 @@ public class StoreQueryService {
     private final StoreRepository storeRepository;
     private final StoreLikeRepository storeLikeRepository;
     private final MemberStoreRepository memberStoreRepository;
-    private final MemberRepository memberRepository;
 
 
     private final int RADIUS = 1000; //1km 반경에 있는 가게 조회

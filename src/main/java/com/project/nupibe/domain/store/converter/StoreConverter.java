@@ -27,8 +27,8 @@ public class StoreConverter {
                 .content(store.getContent())
                 .images(images) // 여러 이미지 추가
                 .category(store.getCategory())
-                .like_num(store.getLikeNum())
-                .bookmark_num(store.getBookmarkNum())
+                .likeNum(store.getLikeNum())
+                .bookmarkNum(store.getBookmarkNum())
                 .isLiked(isLiked)
                 .isBookmarked(isBookmarked)
                 .build();

@@ -28,8 +28,8 @@ public class StoreResponseDTO {
             String content,
             List<String> images,
             String category,
-            Integer like_num,
-            Integer bookmark_num,
+            int likeNum,
+            int bookmarkNum,
             Boolean isLiked,
             Boolean isBookmarked
     ) {}

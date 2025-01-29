@@ -37,14 +37,15 @@ public class RouteController {
 
     @GetMapping("/{routeId}")
     @Operation(summary = "경로 상세 조회 API", description = "PathVariable로 보낸 id의 경로를 상세 조회 합니다.")
-    public CustomResponse<RouteDetailResDTO.RouteDetailResponse> getRouteDetail(@PathVariable Long routeId) {
-        RouteDetailResDTO.RouteDetailResponse response = routeQueryService.getRouteDetail(routeId);
+    public CustomResponse<RouteDetailResDTO.RouteDetailResponse> getRouteDetail(@PathVariable("routeId") Long routeId,
+                                                                                @RequestParam(required = false) Long memberId) {
+        RouteDetailResDTO.RouteDetailResponse response = routeQueryService.getRouteDetail(routeId,memberId);
         return CustomResponse.onSuccess(response);
     }
 
     @GetMapping("/{routeId}/stores")
     @Operation(summary = "경로 내 장소 목록 조회 API", description = "PathVariable로 보낸 id의 경로 내 장소들을 조회 합니다.")
-    public CustomResponse<RoutePlacesResDTO.RoutePlacesResponse> getRoutePlaces(@PathVariable Long routeId) {
+    public CustomResponse<RoutePlacesResDTO.RoutePlacesResponse> getRoutePlaces(@PathVariable Long routeId){
         RoutePlacesResDTO.RoutePlacesResponse response = routeQueryService.getRoutePlaces(routeId);
         return CustomResponse.onSuccess(response);
     }
