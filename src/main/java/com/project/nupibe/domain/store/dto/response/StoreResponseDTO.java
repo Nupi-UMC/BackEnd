@@ -22,15 +22,17 @@ public class StoreResponseDTO {
     ){}
 
     @Builder
-    public record StoreDetailResponseDTO (
+    public record StoreDetailResponseDTO(
             Long id,
             String name,
             String content,
             String image,
             String category,
             Integer like_num,
-            Integer bookmark_num){
-    }
+            Integer bookmark_num,
+            boolean isLiked,
+            boolean isBookmarked
+    ) {}
     @Builder
     public record StorePreviewDTO(
             Long id,

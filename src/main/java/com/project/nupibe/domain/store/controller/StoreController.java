@@ -25,8 +25,10 @@ public class StoreController {
 
     @GetMapping("{storeId}/detail")
     @Operation(method = "GET", summary = "장소 단일 조회(detail) API", description = "장소 상세페이지 조회입니다.")
-    public CustomResponse<StoreResponseDTO.StoreDetailResponseDTO> getStoreDetail(@PathVariable("storeId") Long storeId){
-        StoreResponseDTO.StoreDetailResponseDTO responseDTO = storeQueryService.getStoreDetail(storeId);
+    public CustomResponse<StoreResponseDTO.StoreDetailResponseDTO> getStoreDetail(
+            @PathVariable("storeId") Long storeId,
+            @RequestParam(required = false) Long memberId) {
+        StoreResponseDTO.StoreDetailResponseDTO responseDTO = storeQueryService.getStoreDetail(storeId, memberId);
         return CustomResponse.onSuccess(responseDTO);
     }
     @GetMapping("{storeId}/routes")

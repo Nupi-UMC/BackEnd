@@ -16,7 +16,10 @@ import java.util.stream.Collectors;
 public class StoreConverter {
     //entity -> previewDTO
 
-    public static StoreResponseDTO.StoreDetailResponseDTO toStoreDetailResponseDTO(Store store){
+    public static StoreResponseDTO.StoreDetailResponseDTO toStoreDetailResponseDTO(
+            Store store,
+            boolean isLiked,
+            boolean isBookmarked) {
         return StoreResponseDTO.StoreDetailResponseDTO.builder()
                 .id(store.getId())
                 .name(store.getName())
@@ -25,6 +28,8 @@ public class StoreConverter {
                 .category(store.getCategory())
                 .like_num(store.getLikeNum())
                 .bookmark_num(store.getBookmarkNum())
+                .isLiked(isLiked)
+                .isBookmarked(isBookmarked)
                 .build();
     }
     public static StoreResponseDTO.StorePreviewDTO toStorePreviewDto(Store store){

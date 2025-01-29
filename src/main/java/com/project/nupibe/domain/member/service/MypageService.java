@@ -9,11 +9,14 @@ import com.project.nupibe.domain.member.repository.MemberRepository;
 import com.project.nupibe.domain.member.repository.MemberRouteRepository;
 import com.project.nupibe.domain.member.repository.MemberStoreRepository;
 import com.project.nupibe.domain.route.entity.Route;
+import com.project.nupibe.domain.route.repository.RouteRepository;
+import com.project.nupibe.domain.route.repository.RouteStoreRepository;
 import com.project.nupibe.domain.store.entity.Store;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -22,8 +25,9 @@ public class MypageService {
     //Repository
     private final MemberRepository memberRepository;
     private final MemberStoreRepository memberStoreRepository;
-
+    private final RouteRepository routeRepository;
     private final MemberRouteRepository memberRouteRepository;
+    private final RouteStoreRepository routeStoreRepository;
 
     @Transactional
     public MypageResponseDTO.MypageDTO getMypage(Long id){
@@ -44,16 +48,27 @@ public class MypageService {
     }
 
     @Transactional
-    public MypageResponseDTO.MypageRoutesDTO getMemberRoute(Long id){
-        Member member = memberRepository.findById(id).orElseThrow(() -> new MemberException(MemberErrorCode.NOT_FOUND));
+    public MypageResponseDTO.MypageRoutesDTO getMemberRoute(Long memberId, String routeType) {
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new MemberException(MemberErrorCode.NOT_FOUND));
 
-        List<Route> routes = memberRouteRepository.findRoutesByMemberId(member.getId());
+        List<Route> routes = new ArrayList<>();
+        switch (routeType) {
+            case "created":
+                routes = routeRepository.findByMember(member);
+                break;
+            case "saved":
+                routes = memberRouteRepository.findRoutesByMemberId(member.getId());
+                break;
+        }
 
-        List<MypageResponseDTO.MemberRouteDTO> routeList = MemberConverter.toMemberRouteDTOList(routes);
+        List<String> images = new ArrayList<>();
+        for (Route route : routes) {
+            String pic = routeStoreRepository.findFirstImage(route);
+            images.add(pic);
+        }
 
-        return MypageResponseDTO.MypageRoutesDTO.builder()
-                .bookmarkedRoutes(routeList)
-                .build();
+        return MemberConverter.toMypageRoutesDTO(routes, images);
     }
 
 

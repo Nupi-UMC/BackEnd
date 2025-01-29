@@ -1,5 +1,11 @@
 package com.project.nupibe.domain.store.service;
 
+import com.project.nupibe.domain.member.entity.Member;
+import com.project.nupibe.domain.member.exception.code.MemberErrorCode;
+import com.project.nupibe.domain.member.exception.handler.MemberException;
+import com.project.nupibe.domain.member.repository.MemberRepository;
+import com.project.nupibe.domain.member.repository.MemberStoreRepository;
+import com.project.nupibe.domain.member.repository.StoreLikeRepository;
 import com.project.nupibe.domain.store.converter.StoreConverter;
 import com.project.nupibe.domain.store.dto.response.StoreResponseDTO;
 import com.project.nupibe.domain.store.entity.Store;
@@ -21,13 +27,30 @@ import java.util.ArrayList;
 @RequiredArgsConstructor
 public class StoreQueryService {
     private final StoreRepository storeRepository;
+    private final StoreLikeRepository storeLikeRepository;
+    private final MemberStoreRepository memberStoreRepository;
+    private final MemberRepository memberRepository;
+
+
     private final int RADIUS = 1000; //1km 반경에 있는 가게 조회
 
     //단일 가게 조회(detail)
-    public StoreResponseDTO.StoreDetailResponseDTO getStoreDetail(Long storeId) {
+    public StoreResponseDTO.StoreDetailResponseDTO getStoreDetail(Long storeId, Long memberId) {
         Store store = storeRepository.findById(storeId)
                 .orElseThrow(() -> new StoreException(StoreErrorCode.NOT_FOUND));
-        return StoreConverter.toStoreDetailResponseDTO(store);
+
+        boolean isLiked = false;
+        boolean isBookmarked = false;
+
+        if (memberId != null) {
+            // 좋아요 여부 확인
+            isLiked = storeLikeRepository.existsByMemberIdAndStoreId(memberId, storeId);
+
+            // 북마크 여부 확인
+            isBookmarked = memberStoreRepository.existsByMemberIdAndStoreId(memberId, storeId);
+        }
+
+        return StoreConverter.toStoreDetailResponseDTO(store, isLiked, isBookmarked);
     }
 
     //단일 가게 조회(preview)

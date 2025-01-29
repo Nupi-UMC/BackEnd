@@ -7,6 +7,7 @@ import com.project.nupibe.domain.store.entity.Store;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -39,19 +40,26 @@ public class MemberConverter {
 
 
 
-    // Route Entity -> MemberRouteDTO
-    public static MypageResponseDTO.MemberRouteDTO toMemberRouteDTO(Route route) {
+    public static MypageResponseDTO.MemberRouteDTO toMemberRouteDTO(Route route, String image) {
         return MypageResponseDTO.MemberRouteDTO.builder()
+                .routeId(route.getId())
                 .name(route.getRouteName())
                 .location(route.getLocation())
+                .routePic(image)
                 .build();
     }
 
-    // List<Route> -> List<MemberRouteDTO>
-    public static List<MypageResponseDTO.MemberRouteDTO> toMemberRouteDTOList(List<Route> routes) {
-        return routes.stream()
-                .map(MemberConverter::toMemberRouteDTO) // Route를 DTO로 변환
-                .collect(Collectors.toList());
+    public static MypageResponseDTO.MypageRoutesDTO toMypageRoutesDTO(List<Route> routes, List<String> images) {
+        List<MypageResponseDTO.MemberRouteDTO> routeList = new ArrayList<>();
+
+        for (int i = 0; i < routes.size(); i++) {
+            MypageResponseDTO.MemberRouteDTO route = toMemberRouteDTO(routes.get(i), images.get(i));
+            routeList.add(route);
+        }
+
+        return MypageResponseDTO.MypageRoutesDTO.builder()
+                .routes(routeList)
+                .build();
     }
 
 }
