@@ -74,8 +74,8 @@ public class Store extends BaseEntity {
     @Column(columnDefinition = "geography(Point, 4326)")
     private Point coordinates1; // PostGIS Point 타입
 
-    @OneToMany(mappedBy = "store", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<StoreImage> images = new ArrayList<>();
+    @OneToMany(mappedBy = "store", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    private List<StoreImage> images;
 
     public void setBookmarkNum(int i) {
         this.bookmarkNum = i;

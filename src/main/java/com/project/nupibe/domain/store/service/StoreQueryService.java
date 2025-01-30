@@ -8,6 +8,7 @@ import com.project.nupibe.domain.member.repository.MemberStoreRepository;
 import com.project.nupibe.domain.member.repository.StoreLikeRepository;
 import com.project.nupibe.domain.store.converter.StoreConverter;
 import com.project.nupibe.domain.store.dto.response.StoreResponseDTO;
+import com.project.nupibe.domain.store.entity.ImageType;
 import com.project.nupibe.domain.store.entity.Store;
 import com.project.nupibe.domain.store.entity.StoreImage;
 import com.project.nupibe.domain.store.entity.StoreSearchQuery;
@@ -36,7 +37,7 @@ public class StoreQueryService {
 
     private final int RADIUS = 1000; //1km 반경에 있는 가게 조회
 
-    //단일 가게 조회(detail)
+    // 단일 가게 조회(detail)
     public StoreResponseDTO.StoreDetailResponseDTO getStoreDetail(Long storeId, Long memberId) {
         Store store = storeRepository.findById(storeId)
                 .orElseThrow(() -> new StoreException(StoreErrorCode.NOT_FOUND));
@@ -45,18 +46,40 @@ public class StoreQueryService {
         boolean isBookmarked = false;
 
         if (memberId != null) {
-            // 좋아요 여부 확인
             isLiked = storeLikeRepository.existsByMemberIdAndStoreId(memberId, storeId);
-
-            // 북마크 여부 확인
             isBookmarked = memberStoreRepository.existsByMemberIdAndStoreId(memberId, storeId);
         }
-        // 이미지 URL 리스트 생성
-        List<String> images = store.getImages().stream()
-                .map(StoreImage::getImageUrl)
-                .collect(Collectors.toList());
+        List<String> slideImages = getSlideImages(store);
 
-        return StoreConverter.toStoreDetailResponseDTO(store, isLiked, isBookmarked, images);
+        return StoreConverter.toStoreDetailResponseDTO(store, isLiked, isBookmarked, slideImages);
+    }
+
+    private List<String> getSlideImages(Store store) {
+        List<String> slideImages = new ArrayList<>();
+
+        // 대표 이미지를 리스트의 첫 번째 요소로 추가
+        slideImages.add(store.getImage());
+
+        slideImages.addAll(store.getImages().stream()
+                .filter(image -> image.getType() == ImageType.MAIN)
+                .map(StoreImage::getImageUrl)
+                .toList());
+
+        return slideImages;
+    }
+
+    //이미지 탭
+    public StoreResponseDTO.StoreImagesDTO getTabImages(Long storeId) {
+
+        Store store = storeRepository.findById(storeId)
+                .orElseThrow(() -> new StoreException(StoreErrorCode.NOT_FOUND));
+
+        List<String> tabImages = store.getImages().stream()
+                .filter(image -> image.getType() == ImageType.TAB)
+                .map(StoreImage::getImageUrl)
+                .toList();
+
+        return new StoreResponseDTO.StoreImagesDTO(storeId, tabImages);
     }
 
     //단일 가게 조회(preview)

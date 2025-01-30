@@ -26,13 +26,22 @@ public class StoreResponseDTO {
             Long id,
             String name,
             String content,
-            List<String> images,
+            String location,
+            String address,
+            String businessHours,
+            String number,
+            String snsUrl,
+            List<String> slideImages,
             String category,
+            String groupInfo,
             int likeNum,
             int bookmarkNum,
             Boolean isLiked,
-            Boolean isBookmarked
+            Boolean isBookmarked,
+            float latitude,
+            float longitude
     ) {}
+
     @Builder
     public record StorePreviewDTO(
             Long id,
@@ -56,4 +65,10 @@ public class StoreResponseDTO {
             Long storeId,
             boolean saved
     ) {};
+
+
+    public record StoreImagesDTO(
+            Long storeId,
+            List<String> tabImages
+    ) {}
 }

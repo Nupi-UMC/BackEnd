@@ -14,6 +14,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @Slf4j
 @RestController
 @RequiredArgsConstructor
@@ -37,6 +39,14 @@ public class StoreController {
     public CustomResponse<StoreResponseDTO.MemberRouteListDTO> getRoutesByStoreId(@PathVariable("storeId") Long storeId) {
         StoreResponseDTO.MemberRouteListDTO routes = storeCommandService.getRoutesByStoreId(storeId);
         return CustomResponse.onSuccess(routes);
+    }
+
+    @GetMapping("/{storeId}/images")
+    @Operation(method = "GET", summary = "특정 가게의 이미지들 조회", description = "상세페이지 조회 내 사진 탭 기능입니다.")
+    public CustomResponse<StoreResponseDTO.StoreImagesDTO> getTabImages(@PathVariable("storeId") Long storeId) {
+        StoreResponseDTO.StoreImagesDTO storeImagesDTO = storeQueryService.getTabImages(storeId);
+        return CustomResponse.onSuccess(storeImagesDTO);
+
     }
 
     @PostMapping("{storeId}/bookmark")

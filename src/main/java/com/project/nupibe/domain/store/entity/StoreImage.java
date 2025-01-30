@@ -22,5 +22,9 @@ public class StoreImage {
 
     @Column(name = "image_url", nullable = false)
     private String imageUrl;
+
+    @Column(name = "type", nullable = false)
+    @Enumerated(EnumType.STRING)
+    private ImageType type; // MAIN,TAB
 }
 
