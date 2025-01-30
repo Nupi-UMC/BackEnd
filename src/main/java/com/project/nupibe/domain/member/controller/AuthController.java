@@ -16,20 +16,18 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/auth")
-@Tag(name = "로그인/회원가입 API")
+@Tag(name = "인증/로그인 API")
 public class AuthController {
 
     private final VerificationService verificationService;
     private final VerifyService verifyService;
-    private final SignupService signupService;
     private final LoginService loginService;
     private final LogoutService logoutService;
     private final TokenService tokenService;
 
-    public AuthController(VerificationService verificationService, VerifyService verifyService, SignupService signupService, LoginService loginService, LogoutService logoutService, TokenService tokenService) {
+    public AuthController(VerificationService verificationService, VerifyService verifyService, LoginService loginService, LogoutService logoutService, TokenService tokenService) {
         this.verificationService = verificationService;
         this.verifyService = verifyService;
-        this.signupService = signupService;
         this.loginService = loginService;
         this.logoutService = logoutService;
         this.tokenService = tokenService;
@@ -57,20 +55,20 @@ public class AuthController {
         return CustomResponse.onSuccess(new ResponseVerifyDto.Result(verificationId));
     }
 
-    @PostMapping("/signup")
-    @Operation(summary = "회원가입 API", description = "회원가입을 위한 API입니다.")
-    public CustomResponse<ResponseSignupDto.Result> signup(@Valid @RequestBody RequestSignupDto signupDto) {
-        try {
-            signupService.signup(signupDto);
-            return CustomResponse.onSuccess(new ResponseSignupDto.Result());
-        } catch (IllegalArgumentException e) {
-            throw new MemberException(SignupErrorCode.REQUIRED_FIELD_MISSING);
-        } catch (MemberException e) {
-            throw e;
-        } catch (Exception e) {
-            throw new MemberException(SignupErrorCode.INTERNAL_SERVER_ERROR);
-        }
-    }
+//    @PostMapping("/signup")
+//    @Operation(summary = "회원가입 API", description = "회원가입을 위한 API입니다.")
+//    public CustomResponse<ResponseSignupDto.Result> signup(@Valid @RequestBody RequestSignupDto signupDto) {
+//        try {
+//            signupService.signup(signupDto);
+//            return CustomResponse.onSuccess(new ResponseSignupDto.Result());
+//        } catch (IllegalArgumentException e) {
+//            throw new MemberException(SignupErrorCode.REQUIRED_FIELD_MISSING);
+//        } catch (MemberException e) {
+//            throw e;
+//        } catch (Exception e) {
+//            throw new MemberException(SignupErrorCode.INTERNAL_SERVER_ERROR);
+//        }
+//    }
 
     @PostMapping("/login")
     @Operation(summary = "로그인 API", description = "로그인 요청을 처리하고 JWT 토큰을 반환합니다.")
