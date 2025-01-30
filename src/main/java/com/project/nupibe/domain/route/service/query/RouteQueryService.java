@@ -1,5 +1,8 @@
 package com.project.nupibe.domain.route.service.query;
 
+import com.project.nupibe.domain.member.repository.MemberRouteRepository;
+import com.project.nupibe.domain.member.repository.MemberStoreRepository;
+import com.project.nupibe.domain.member.repository.RouteLikeRepository;
 import com.project.nupibe.domain.route.converter.RouteConverter;
 import com.project.nupibe.domain.route.dto.response.RouteDetailResDTO;
 import com.project.nupibe.domain.route.dto.response.RoutePlacesResDTO;
@@ -32,15 +35,29 @@ import java.util.stream.Collectors;
 public class RouteQueryService {
 
     private final RouteRepository routeRepository;
+    private final RouteLikeRepository routeLikeRepository;
     private final StoreRepository storeRepository;
+    private final MemberRouteRepository memberRouteRepository;
 
-    public RouteDetailResDTO.RouteDetailResponse getRouteDetail(Long routeId) {
+
+    public RouteDetailResDTO.RouteDetailResponse getRouteDetail(Long routeId, Long memberId) {
         Route route = routeRepository.findById(routeId)
                 .orElseThrow(() -> new RouteException(RouteErrorCode.ROUTE_NOT_FOUND));
 
+        boolean isLiked = false;
+        boolean isBookmarked = false;
+
+        if (memberId != null) {
+            // 좋아요 여부 확인
+            isLiked = routeLikeRepository.existsByMemberIdAndRouteId(memberId, routeId);
+
+            // 북마크 여부 확인
+            isBookmarked = memberRouteRepository.existsByMemberIdAndRouteId(memberId, routeId);
+        }
+
         List<RouteStoreDTO> storeList = storeRepository.findStoresByRouteId(routeId);
 
-        return RouteConverter.convertToRouteDetailDTO(route, storeList);
+        return RouteConverter.convertToRouteDetailDTO(route, isLiked, isBookmarked,  storeList);
     }
 
     public RoutePlacesResDTO.RoutePlacesResponse getRoutePlaces(Long routeId) {
@@ -59,7 +76,7 @@ public class RouteQueryService {
         }
 
         // 4. 결과 반환
-        return RouteConverter.convertToRoutePlacesDTO(route, places);
+        return RouteConverter.convertToRoutePlacesDTO(route,places);
     }
 
     // 네이티브 쿼리 결과를 RouteStoreDTO로 매핑하는 메서드(PostGIS는 네이티브 쿼리로 작동)

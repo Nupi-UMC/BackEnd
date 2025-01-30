@@ -1,8 +1,16 @@
 package com.project.nupibe.domain.store.service;
 
+import com.project.nupibe.domain.member.entity.Member;
+import com.project.nupibe.domain.member.exception.code.MemberErrorCode;
+import com.project.nupibe.domain.member.exception.handler.MemberException;
+import com.project.nupibe.domain.member.repository.MemberRepository;
+import com.project.nupibe.domain.member.repository.MemberStoreRepository;
+import com.project.nupibe.domain.member.repository.StoreLikeRepository;
 import com.project.nupibe.domain.store.converter.StoreConverter;
 import com.project.nupibe.domain.store.dto.response.StoreResponseDTO;
+import com.project.nupibe.domain.store.entity.ImageType;
 import com.project.nupibe.domain.store.entity.Store;
+import com.project.nupibe.domain.store.entity.StoreImage;
 import com.project.nupibe.domain.store.entity.StoreSearchQuery;
 import com.project.nupibe.domain.store.exception.code.StoreErrorCode;
 import com.project.nupibe.domain.store.exception.handler.StoreException;
@@ -15,19 +23,63 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class StoreQueryService {
     private final StoreRepository storeRepository;
+    private final StoreLikeRepository storeLikeRepository;
+    private final MemberStoreRepository memberStoreRepository;
+
+
     private final int RADIUS = 1000; //1km 반경에 있는 가게 조회
 
-    //단일 가게 조회(detail)
-    public StoreResponseDTO.StoreDetailResponseDTO getStoreDetail(Long storeId) {
+    // 단일 가게 조회(detail)
+    public StoreResponseDTO.StoreDetailResponseDTO getStoreDetail(Long storeId, Long memberId) {
         Store store = storeRepository.findById(storeId)
                 .orElseThrow(() -> new StoreException(StoreErrorCode.NOT_FOUND));
-        return StoreConverter.toStoreDetailResponseDTO(store);
+
+        boolean isLiked = false;
+        boolean isBookmarked = false;
+
+        if (memberId != null) {
+            isLiked = storeLikeRepository.existsByMemberIdAndStoreId(memberId, storeId);
+            isBookmarked = memberStoreRepository.existsByMemberIdAndStoreId(memberId, storeId);
+        }
+        List<String> slideImages = getSlideImages(store);
+
+        return StoreConverter.toStoreDetailResponseDTO(store, isLiked, isBookmarked, slideImages);
+    }
+
+    private List<String> getSlideImages(Store store) {
+        List<String> slideImages = new ArrayList<>();
+
+        // 대표 이미지를 리스트의 첫 번째 요소로 추가
+        slideImages.add(store.getImage());
+
+        slideImages.addAll(store.getImages().stream()
+                .filter(image -> image.getType() == ImageType.MAIN)
+                .map(StoreImage::getImageUrl)
+                .toList());
+
+        return slideImages;
+    }
+
+    //이미지 탭
+    public StoreResponseDTO.StoreImagesDTO getTabImages(Long storeId) {
+
+        Store store = storeRepository.findById(storeId)
+                .orElseThrow(() -> new StoreException(StoreErrorCode.NOT_FOUND));
+
+        List<String> tabImages = store.getImages().stream()
+                .filter(image -> image.getType() == ImageType.TAB)
+                .map(StoreImage::getImageUrl)
+                .toList();
+
+        return new StoreResponseDTO.StoreImagesDTO(storeId, tabImages);
     }
 
     //단일 가게 조회(preview)

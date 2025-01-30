@@ -8,10 +8,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -32,16 +29,18 @@ public class MypageController {
 
     @Operation(method = "GET",summary = "사용자 저장 장소 조회", description = "memberId값을 가지고 저장한 장소들의 목록을 조회합니다.")
     @GetMapping("{memberId}/stores")
-    public CustomResponse<MypageResponseDTO.MypageStoresDTO> getBookmarkStore(@PathVariable("memberId") Long id){
-        MypageResponseDTO.MypageStoresDTO responseDto = mypageService.getMemberStore(id);
+    public CustomResponse<MypageResponseDTO.MypageStoresDTO> getBookmarkStore(@PathVariable("memberId") Long memberId){
+        MypageResponseDTO.MypageStoresDTO responseDto = mypageService.getMemberStore(memberId);
         return CustomResponse.onSuccess(responseDto);
     }
 
-    @Operation(method = "GET",summary = "사용자 저장 경로 조회", description = "memberId값을 가지고 저장한 경로들의 목록을 조회합니다.")
-    @GetMapping("{memberId}/routes")
-    public CustomResponse<MypageResponseDTO.MypageRoutesDTO> getBookmarkRoute(@PathVariable("memberId") Long id){
-        MypageResponseDTO.MypageRoutesDTO responseDto = mypageService.getMemberRoute(id);
-        return CustomResponse.onSuccess(responseDto);
+    @Operation(method = "GET", summary = "사용자 저장 경로 조회", description = "memberId값과 routeType을 받아 저장한 경로들의 목록을 조회합니다.")
+    @GetMapping("/{memberId}/routes")
+    public CustomResponse<MypageResponseDTO.MypageRoutesDTO> getBookmarkRoute(
+            @PathVariable("memberId") Long memberId,
+            @RequestParam(value = "routeType", required = true, defaultValue = "created") String routeType) {
+        MypageResponseDTO.MypageRoutesDTO routes = mypageService.getMemberRoute(memberId, routeType);
+        return CustomResponse.onSuccess(routes);
     }
 
 

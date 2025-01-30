@@ -13,7 +13,8 @@ import java.util.stream.Collectors;
 
 public class RouteConverter {
 
-    public static RouteDetailResDTO.RouteDetailResponse convertToRouteDetailDTO(Route route, List<RouteStoreDTO> storeList) {
+    public static RouteDetailResDTO.RouteDetailResponse convertToRouteDetailDTO(
+            Route route, boolean isLiked, boolean isBookmarked, List<RouteStoreDTO> storeList) {
         List<RouteDetailResDTO.StoreSummary> stores = storeList.stream()
                 .map(store -> RouteDetailResDTO.StoreSummary.builder()
                         .storeId(store.storeId())
@@ -29,6 +30,8 @@ public class RouteConverter {
                 .location(route.getLocation())
                 .likeNum(route.getLikeNum())
                 .bookmarkNum(route.getBookmarkNum())
+                .isLiked(isLiked)
+                .isBookmarked(isBookmarked)
                 .storeList(stores)
                 .build();
     }
