@@ -14,8 +14,10 @@ public class MypageResponseDTO{
 
     @Builder
     public record MemberStoreDTO (
+            Long storeId,
             String name,
-            String location
+            String location,
+            String storePic
     ){}
 
     @Builder
@@ -24,15 +26,17 @@ public class MypageResponseDTO{
     ){}
 
     @Builder
-    public record MemberRouteDTO (
+    public record MemberRouteDTO(
+            Long routeId,
             String name,
-            String location
-    ){}
+            String location,
+            String routePic
+    ) {}
 
     @Builder
-    public record MypageRoutesDTO (
-            List<MemberRouteDTO> bookmarkedRoutes
-    ){}
+    public record MypageRoutesDTO(
+            List<MemberRouteDTO> routes
+    ) {}
 
 
 

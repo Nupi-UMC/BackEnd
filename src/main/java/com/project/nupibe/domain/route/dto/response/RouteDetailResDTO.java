@@ -14,6 +14,8 @@ public class RouteDetailResDTO {
             String location,
             int likeNum,
             int bookmarkNum,
+            Boolean isLiked,
+            Boolean isBookmarked,
             List<StoreSummary> storeList
     ) {
     }
