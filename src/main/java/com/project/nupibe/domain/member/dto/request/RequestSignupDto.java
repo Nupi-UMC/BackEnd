@@ -3,22 +3,34 @@ package com.project.nupibe.domain.member.dto.request;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import io.swagger.v3.oas.annotations.media.Schema;
+import org.springframework.web.multipart.MultipartFile;
 
-@Builder
-public record RequestSignupDto(
-        @NotNull(message = "Verification ID is required.")
-        Long verificationId,
+@Getter
+@Setter
+@NoArgsConstructor
+public class RequestSignupDto {
 
-        @NotBlank(message = "Email is required.")
-        @Email(message = "Invalid email format.")
-        String email,
+    @NotNull(message = "Verification ID is required.")
+    private Long verificationId;
 
-        @NotBlank(message = "Password is required.")
-        String password,
+    @NotBlank(message = "Email is required.")
+    @Email(message = "Invalid email format.")
+    private String email;
 
-        @NotBlank(message = "Nickname is required.")
-        String nickname,
+    @NotBlank(message = "Password is required.")
+    private String password;
 
-        String profile
-) {}
+    @NotBlank(message = "Nickname is required.")
+    private String nickname;
+
+    public RequestSignupDto(Long verificationId, String email, String password, String nickname) {
+        this.verificationId = verificationId;
+        this.email = email;
+        this.password = password;
+        this.nickname = nickname;
+    }
+}
