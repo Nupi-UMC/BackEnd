@@ -51,7 +51,7 @@ public class RouteController {
     @PostMapping
     @Operation(summary = "최적 경로 요청 API", description = "출발지, 도착지 및 경유지를 포함한 최적 경로를 요청합니다.")
     public ResponseEntity<RouteResponseDto> getOptimalRoute(
-            @RequestHeader("Authorization") String authorizationHeader,
+            @RequestHeader("JWT-TOKEN") String authorizationHeader,
             @RequestBody RouteCreateRequestDto requestDto) {
         RouteResponseDto response = routeService.createRoute(authorizationHeader,requestDto);
         return ResponseEntity.ok(response);

@@ -43,7 +43,7 @@ public class ScheduleController {
     @GetMapping
     public ResponseEntity<CustomResponse<?>> getScheduleByDate(
             @RequestParam String date,
-            @RequestHeader("Authorization") String authorizationHeader) {
+            @RequestHeader("JWT TOKEN") String authorizationHeader) {
 
         // 토큰 검증하는 코드
         if (authorizationHeader == null) {
@@ -118,7 +118,7 @@ public class ScheduleController {
             @Parameter(description = "조회할 연-월 (yyyy-MM 형식)", example = "2024-12")
             @RequestParam String month,
             @Parameter(description = "액세스 토큰 조회", example = "액세스 토큰을 넣으면 됩니다")
-            @RequestHeader("Authorization") String authorizationHeader) {
+            @RequestHeader("JWT-TOKEN") String authorizationHeader) {
 
         if (authorizationHeader == null) {
             return ResponseEntity.badRequest().body(

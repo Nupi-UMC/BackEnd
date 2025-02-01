@@ -23,7 +23,7 @@ public class RouteCreateRequestDto {
     @Setter
     public static class StoreDto {
         private Long id;
-        private int orderIndex;
+       // private int orderIndex;
 
     }
 }

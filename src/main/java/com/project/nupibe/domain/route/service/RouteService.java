@@ -47,7 +47,7 @@ public class RouteService {
     private final MemberRouteRepository memberRouteRepository;
     private final JwtTokenProvider jwtTokenProvider;
 
-    public RouteResponseDto createRoute(@RequestHeader("Authorization") String authorizationHeader, @RequestBody RouteCreateRequestDto requestDto) {
+    public RouteResponseDto createRoute(@RequestHeader("JWT-TOKEN") String authorizationHeader, @RequestBody RouteCreateRequestDto requestDto) {
         try {
             System.out.println("Route 생성 요청 시작");
 
