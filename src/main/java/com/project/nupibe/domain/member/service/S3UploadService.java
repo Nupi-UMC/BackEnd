@@ -29,7 +29,7 @@ public class S3UploadService {
 
         long fileCount = storeImageRepository.count();
 
-        String customFileName = "image_" + (fileCount + 1) + ".jpg";
+        String customFileName = "image_" + (fileCount + 21) + ".jpg";
         ObjectMetadata metadata = new ObjectMetadata();
         metadata.setContentLength(multipartFile.getSize());
         metadata.setContentType(multipartFile.getContentType());
