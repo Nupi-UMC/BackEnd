@@ -38,7 +38,8 @@ public class RouteController {
     @GetMapping("/{routeId}")
     @Operation(summary = "경로 상세 조회 API", description = "PathVariable로 보낸 id의 경로를 상세 조회 합니다.")
     public CustomResponse<RouteDetailResDTO.RouteDetailResponse> getRouteDetail(@PathVariable("routeId") Long routeId,
-                                                                                @RequestParam(required = false) Long memberId) {
+                                                                                @RequestHeader("JWT-TOKEN") String authorizationHeader) {
+        Long memberId = securityUtil.getMemberIdFromToken(authorizationHeader);
         RouteDetailResDTO.RouteDetailResponse response = routeQueryService.getRouteDetail(routeId,memberId);
         return CustomResponse.onSuccess(response);
     }
@@ -61,14 +62,14 @@ public class RouteController {
 
     @PostMapping("{routeId}/bookmark")
     @Operation(method = "POST", summary = "경로 북마크 API", description = "경로 조회 내 북마크 버튼을 클릭시 작동하는 기능입니다.")
-    public CustomResponse<RouteDetailResDTO.savedDTO> bookmarkRoute(@RequestHeader("Authorization") String authorizationHeader, @PathVariable("routeId") Long routeId) {
+    public CustomResponse<RouteDetailResDTO.savedDTO> bookmarkRoute(@RequestHeader("JWT-TOKEN") String authorizationHeader, @PathVariable("routeId") Long routeId) {
         Long memberId = securityUtil.getMemberIdFromToken(authorizationHeader);
         RouteDetailResDTO.savedDTO saved = routeCommandService.bookmarkRoute(memberId, routeId);
         return CustomResponse.onSuccess(saved);
     }
     @PostMapping("{routeId}/like")
     @Operation(method = "POST", summary = "경로 좋아요 API", description = "경로 조회 내 좋아요 버튼을 클릭시 작동하는 기능입니다.")
-    public CustomResponse<RouteDetailResDTO.savedDTO> likeRoute(@RequestHeader("Authorization") String authorizationHeader, @PathVariable("routeId") Long routeId) {
+    public CustomResponse<RouteDetailResDTO.savedDTO> likeRoute(@RequestHeader("JWT-TOKEN") String authorizationHeader, @PathVariable("routeId") Long routeId) {
         Long memberId = securityUtil.getMemberIdFromToken(authorizationHeader);
         RouteDetailResDTO.savedDTO saved = routeCommandService.likeRoute(memberId, routeId);
         return CustomResponse.onSuccess(saved);
