@@ -40,6 +40,7 @@ public class ScheduleController {
     }
 
 
+    @Operation(summary = "날짜 일정 조회",description = "사용자의 특정 날짜의 일정을 조회합니다.")
     @GetMapping
     public ResponseEntity<CustomResponse<?>> getScheduleByDate(
             @RequestParam String date,
