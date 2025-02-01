@@ -40,9 +40,33 @@ public class ScheduleController {
     }
 
 
+    @Operation(summary = "날짜 일정 조회",description = "사용자의 특정 날짜의 일정을 조회합니다.")
     @GetMapping
-    public ResponseEntity<CustomResponse<?>> getScheduleByDate(@RequestParam String date) {
+    public ResponseEntity<CustomResponse<?>> getScheduleByDate(
+            @RequestParam String date,
+            @RequestHeader("JWT TOKEN") String authorizationHeader) {
+
+        // 토큰 검증하는 코드
+        if (authorizationHeader == null) {
+            return ResponseEntity.badRequest().body(
+                    CustomResponse.onFailure("VALID400_1", "Authorization 헤더가 없습니다.")
+            );
+        }
+        // 토큰 잘 들어왔는지 체크
+        System.out.println("Received Authorization Header: " + authorizationHeader);
+
+
         try {
+
+            // 액세스 토큰에서 사용자 이메일 추출
+            String token = authorizationHeader.substring(7); // "Bearer " 제거
+            String email = jwtTokenProvider.extractEmail(token);
+
+            // 이메일을 사용하여 멤버 조회
+            Member member = memberRepository.findByEmail(email)
+                    .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
+
+
             // 날짜 형식 검증 및 변환
             LocalDate parsedDate = LocalDate.parse(date);
 
@@ -95,7 +119,7 @@ public class ScheduleController {
             @Parameter(description = "조회할 연-월 (yyyy-MM 형식)", example = "2024-12")
             @RequestParam String month,
             @Parameter(description = "액세스 토큰 조회", example = "액세스 토큰을 넣으면 됩니다")
-            @RequestHeader("Authorization") String authorizationHeader) {
+            @RequestHeader("JWT-TOKEN") String authorizationHeader) {
 
         if (authorizationHeader == null) {
             return ResponseEntity.badRequest().body(
@@ -113,6 +137,7 @@ public class ScheduleController {
             // 이메일을 사용하여 멤버 조회
             Member member = memberRepository.findByEmail(email)
                     .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
+
             // 요청받은 month를 LocalDate로 파싱
             YearMonth parsedMonth = YearMonth.parse(month, DateTimeFormatter.ofPattern("yyyy-MM"));
 
