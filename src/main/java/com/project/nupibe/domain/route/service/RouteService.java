@@ -3,6 +3,7 @@ package com.project.nupibe.domain.route.service;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.project.nupibe.domain.member.entity.Member;
 import com.project.nupibe.domain.member.entity.MemberRoute;
+import com.project.nupibe.domain.member.jwt.JwtTokenProvider;
 import com.project.nupibe.domain.member.repository.MemberRepository;
 import com.project.nupibe.domain.member.repository.MemberRouteRepository;
 import com.project.nupibe.domain.route.dto.RouteCreateRequestDto;
@@ -14,10 +15,14 @@ import com.project.nupibe.domain.route.repository.RouteRepository;
 import com.project.nupibe.domain.route.repository.RouteStoreRepository;
 import com.project.nupibe.domain.store.entity.Store;
 import com.project.nupibe.domain.store.repository.StoreRepository;
+import com.project.nupibe.global.apiPayload.CustomResponse;
+import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RequestHeader;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -40,15 +45,48 @@ public class RouteService {
     private final MemberRepository memberRepository;
     private final KakaoAddressService kakaoAddressService;
     private final MemberRouteRepository memberRouteRepository;
+    private final JwtTokenProvider jwtTokenProvider;
 
-    public RouteResponseDto createRoute(RouteCreateRequestDto requestDto) {
+    public RouteResponseDto createRoute(@RequestHeader("JWT-TOKEN") String authorizationHeader, @RequestBody RouteCreateRequestDto requestDto) {
+        try {
+            System.out.println("Route 생성 요청 시작");
 
-        System.out.println("Received Route Create Request: " + requestDto);
+            // Authorization 헤더 검증
+            if (authorizationHeader == null  ) {
+                throw new IllegalArgumentException("VALID400_1: Authorization 헤더가 없거나 올바르지 않습니다.");
+            }
 
-        // 1. 멤버 조회 (실제로 존재하는 멤버인지)
-        Member member = memberRepository.findById(requestDto.getMemberId())
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 멤버의 ID입니다."));
-        System.out.println("Member found: " + member.getId());
+            // 토큰 잘 들어왔는지 체크
+            System.out.println("Received Authorization Header: " + authorizationHeader);
+
+        } catch (Exception e) {
+            e.printStackTrace(); // 예외 발생 시 출력
+            throw e; // 예외 다시 던지기
+
+        }
+
+        // 액세스 토큰에서 사용자 이메일 추출
+        String token = authorizationHeader.substring(7); // "Bearer " 제거
+        // 토큰 검증
+        if (!jwtTokenProvider.validateToken(token)) {
+            throw new IllegalArgumentException("VALID401_1: 유효하지 않은 액세스 토큰입니다.");
+        }
+
+        System.out.println("토큰 유효성 검사 통과");
+
+        // 액세스 토큰에서 사용자 이메일 추출
+        String email = jwtTokenProvider.extractEmail(token);
+        System.out.println("추출된 이메일: " + email);
+
+
+        // 1. 멤버 조회 (실제로 존재하는 멤버인지) 이메일 기반으로 함
+        Member member = memberRepository.findByEmail(email)
+                .orElseThrow(() -> new IllegalArgumentException("VALID404_1: 사용자를 찾을 수 없습니다."));
+        System.out.println("Authenticated Member:  " + member.getId());
+
+        // System.out.println("Received Route Create Request: " + requestDto);
+
+
 
         // 1. storeId로 가게 조회 후 주소 가져오기
         List<Store> stores = requestDto.getStores().stream()
@@ -150,7 +188,7 @@ public class RouteService {
                 .location(requestDto.getLocation())
                 .date(requestDto.getDate())
                 .category(requestDto.getCategory())
-                .member(memberRepository.findById(requestDto.getMemberId()).orElseThrow())
+                .member(member)
                 .build();
 
         routeRepository.save(route);
