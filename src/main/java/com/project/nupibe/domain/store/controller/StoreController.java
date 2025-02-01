@@ -30,7 +30,7 @@ public class StoreController {
     @GetMapping("{storeId}/detail")
     @Operation(method = "GET", summary = "장소 단일 조회(detail) API", description = "장소 상세페이지 조회입니다.")
     public CustomResponse<StoreResponseDTO.StoreDetailResponseDTO> getStoreDetail(
-            @RequestHeader("JWT-TOKEN") String authorizationHeader,
+            @RequestHeader("Authorization") String authorizationHeader,
             @PathVariable("storeId") Long storeId) {
 
         Long memberId = securityUtil.getMemberIdFromToken(authorizationHeader);
@@ -57,7 +57,7 @@ public class StoreController {
 
     @PostMapping("{storeId}/bookmark")
     @Operation(method = "POST", summary = "장소 북마크 API", description = "장소 조회 시 북마크 버튼을 클릭시 작동하는 기능입니다..")
-    public CustomResponse<StoreResponseDTO.savedDTO> bookmarkStore(@RequestHeader("JWT-TOKEN") String authorizationHeader, @PathVariable("storeId") Long storeId) {
+    public CustomResponse<StoreResponseDTO.savedDTO> bookmarkStore(@RequestHeader("Authorization") String authorizationHeader, @PathVariable("storeId") Long storeId) {
         Long memberId = securityUtil.getMemberIdFromToken(authorizationHeader);
 
         StoreResponseDTO.savedDTO saved = storeCommandService.bookmarkStore(memberId, storeId);
@@ -65,7 +65,7 @@ public class StoreController {
     }
     @PostMapping("{storeId}/like")
     @Operation(method = "POST", summary = "장소 좋아요 API", description = "장소 조회 시 좋아요 버튼을 클릭시 작동하는 기능입니다.")
-    public CustomResponse<StoreResponseDTO.savedDTO> likeStore(@RequestHeader("JWT-TOKEN") String authorizationHeader, @PathVariable("storeId") Long storeId) {
+    public CustomResponse<StoreResponseDTO.savedDTO> likeStore(@RequestHeader("Authorization") String authorizationHeader, @PathVariable("storeId") Long storeId) {
         Long memberId = securityUtil.getMemberIdFromToken(authorizationHeader);
         StoreResponseDTO.savedDTO saved = storeCommandService.likeStore(memberId, storeId);
         return CustomResponse.onSuccess(saved);
