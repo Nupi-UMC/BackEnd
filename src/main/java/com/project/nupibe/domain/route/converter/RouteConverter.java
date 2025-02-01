@@ -26,6 +26,7 @@ public class RouteConverter {
         return RouteDetailResDTO.RouteDetailResponse.builder()
                 .routeId(route.getId())
                 .routeName(route.getRouteName())
+                .nickname(route.getMember().getNickname())
                 .content(route.getContent())
                 .location(route.getLocation())
                 .likeNum(route.getLikeNum())

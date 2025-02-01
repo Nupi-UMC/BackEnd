@@ -10,6 +10,8 @@ public class RouteDetailResDTO {
     public record RouteDetailResponse(
             Long routeId,
             String routeName,
+
+            String nickname,
             String content,
             String location,
             int likeNum,
