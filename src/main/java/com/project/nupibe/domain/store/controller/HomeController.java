@@ -4,6 +4,7 @@ import com.project.nupibe.domain.store.dto.response.HomeResponseDTO;
 import com.project.nupibe.domain.store.service.HomeCommandService;
 import com.project.nupibe.domain.store.service.HomeQueryService;
 import com.project.nupibe.global.apiPayload.CustomResponse;
+import com.project.nupibe.global.config.SecurityUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -13,51 +14,63 @@ import org.springframework.web.bind.annotation.*;
 public class HomeController {
     private final HomeQueryService homeQueryService;
     private final HomeCommandService homeCommandService;
+    private final SecurityUtil securityUtil;
 
-    @GetMapping("/{memberId}")
-    public CustomResponse<HomeResponseDTO.GetHomeResponseDTO> getHome(@PathVariable Long memberId) {
+    @GetMapping("")
+    public CustomResponse<HomeResponseDTO.GetHomeResponseDTO> getHome(@RequestHeader("JWT-TOKEN") String authorizationHeader) {
+        Long memberId = securityUtil.getMemberIdFromToken(authorizationHeader);
+
         HomeResponseDTO.GetHomeResponseDTO getHomeResponseDTO = homeQueryService.getHome(memberId);
         return CustomResponse.onSuccess(getHomeResponseDTO);
     }
 
-    @GetMapping("/{memberId}/search")
+    @GetMapping("/search")
     public CustomResponse<HomeResponseDTO.entertainmentDTO> searchEntertainment
-            (@PathVariable Long memberId,
+            (@RequestHeader("JWT-TOKEN") String authorizationHeader,
              @RequestParam double latitude,
              @RequestParam double longitude,
              @RequestParam(value = "category", required = false, defaultValue = "0") int category,
              @RequestParam(value = "sort", required = false, defaultValue = "default") String sort) {
+        Long memberId = securityUtil.getMemberIdFromToken(authorizationHeader);
+
         HomeResponseDTO.entertainmentDTO getEntertainmentDTO = homeQueryService.getEntertainment(memberId, latitude, longitude, category, sort);
         return CustomResponse.onSuccess(getEntertainmentDTO);
     }
 
-    @GetMapping("/{memberId}/route")
+    @GetMapping("/route")
     public CustomResponse<HomeResponseDTO.myRouteDTO> getRoute(
-            @PathVariable Long memberId,
+            @RequestHeader("JWT-TOKEN") String authorizationHeader,
             @RequestParam(value = "myRoute", required = true, defaultValue = "created") String routeType) {
+        Long memberId = securityUtil.getMemberIdFromToken(authorizationHeader);
+
         HomeResponseDTO.myRouteDTO routes = homeQueryService.getRoute(memberId, routeType);
         return CustomResponse.onSuccess(routes);
     }
 
-    @GetMapping("/{memberId}/{groupName}")
+    @GetMapping("/{groupName}")
     public CustomResponse<HomeResponseDTO.groupStoreDTO> getGroupStore(
-            @PathVariable Long memberId, @PathVariable String groupName) {
+            @RequestHeader("JWT-TOKEN") String authorizationHeader, @PathVariable String groupName) {
+        Long memberId = securityUtil.getMemberIdFromToken(authorizationHeader);
+
         HomeResponseDTO.groupStoreDTO stores = homeQueryService.getGroupStore(memberId, groupName);
         return CustomResponse.onSuccess(stores);
     }
 
-    @PostMapping("/{memberId}/save/{storeId}")
-    public CustomResponse<HomeResponseDTO.savedDTO> saveStore(@PathVariable Long memberId, @PathVariable Long storeId) {
+    @PostMapping("/save/{storeId}")
+    public CustomResponse<HomeResponseDTO.savedDTO> saveStore(@RequestHeader("JWT-TOKEN") String authorizationHeader, @PathVariable Long storeId) {
+        Long memberId = securityUtil.getMemberIdFromToken(authorizationHeader);
+
         HomeResponseDTO.savedDTO saved = homeCommandService.saveStore(memberId, storeId);
         return CustomResponse.onSuccess(saved);
     }
 
-    @GetMapping("/{memberId}/{regionId}")
+    @GetMapping("/{regionId}")
     public CustomResponse<HomeResponseDTO.groupStoreDTO> getRegionStore(
-            @PathVariable Long memberId, @PathVariable Long regionId,
+            @RequestHeader("JWT-TOKEN") String authorizationHeader, @PathVariable Long regionId,
             @RequestParam double latitude, @RequestParam double longitude,
             @RequestParam(value = "category", required = false, defaultValue = "0") int category,
             @RequestParam(value = "sort", required = false, defaultValue = "default") String sort ) {
+        Long memberId = securityUtil.getMemberIdFromToken(authorizationHeader);
         HomeResponseDTO.groupStoreDTO stores = homeQueryService.getRegionStore(memberId, regionId, latitude, longitude, category, sort);
         return CustomResponse.onSuccess(stores);
     }

@@ -39,7 +39,7 @@ public class StoreCommandService {
         // List<RouteStore> -> MemberRouteListDTO 변환
         return StoreConverter.toMemberRouteListDTO(routeStores);
     }
-    @Transactional(readOnly = true)
+    @Transactional
     public StoreResponseDTO.savedDTO bookmarkStore(Long memberId, Long storeId) {
         Member member = memberRepository.findById(memberId).orElseThrow(() -> new MemberException(MemberErrorCode.NOT_FOUND));
 
@@ -73,6 +73,7 @@ public class StoreCommandService {
         }
         return StoreConverter.save(storeId,!exists);
     }
+    @Transactional
     public StoreResponseDTO.savedDTO likeStore(Long memberId, Long storeId) {
         Member member = memberRepository.findById(memberId).orElseThrow(() -> new MemberException(MemberErrorCode.NOT_FOUND));
 
