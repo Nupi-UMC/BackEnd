@@ -87,11 +87,13 @@ public class StoreQueryService {
     public StoreResponseDTO.StorePreviewDTO getStorePreview(Long storeId){
         Store store = storeRepository.findById(storeId)
                 .orElseThrow(()-> new StoreException(StoreErrorCode.NOT_FOUND));
-        return StoreConverter.toStorePreviewDto(store);
+        List<String> slideImages = getSlideImages(store);
+
+        return StoreConverter.toStorePreviewDto(store, slideImages);
     }
 
     //내 위치 주변 가게 조회
-    public StoreResponseDTO.StorePageDTO getStores(String query, float lat, float lng, Long cursor, int offset){
+    public StoreResponseDTO.StorePageDTO getStores(String query, float lat, float lng, Long cursor, int offset) {
         Pageable pageable = PageRequest.of(0, offset);
         Slice<Store> stores;
 
@@ -112,29 +114,23 @@ public class StoreQueryService {
 
         if (enumQuery.equals(StoreSearchQuery.DISTANCE.name())) {
             if (cursor.equals(0L)) {
-                stores = storeRepository.findAroundOrderByDistanceAscIdAsc(pageable,lat, lng, RADIUS);
+                stores = storeRepository.findAroundOrderByDistanceAscIdAsc(pageable, lat, lng, RADIUS);
+            } else {
+                stores = storeRepository.findAroundOrderByDistanceWithCursor(cursor, pageable, lat, lng, RADIUS);
             }
-            else{
-                stores = storeRepository.findAroundOrderByDistanceWithCursor(cursor, pageable,lat, lng, RADIUS);
-            }
-        }
-        else if (enumQuery.equals(StoreSearchQuery.BOOKMARKNUM.name())) {
+        } else if (enumQuery.equals(StoreSearchQuery.BOOKMARKNUM.name())) {
             if (cursor.equals(0L)) {
-                stores = storeRepository.findAroundOrderByBOOKMARKNUMAscIdAsc(pageable,lat, lng, RADIUS);
+                stores = storeRepository.findAroundOrderByBOOKMARKNUMAscIdAsc(pageable, lat, lng, RADIUS);
+            } else {
+                stores = storeRepository.findAroundOrderByBOOKMARKNUMWithCursor(cursor, pageable, lat, lng, RADIUS);
             }
-            else{
-                stores = storeRepository.findAroundOrderByBOOKMARKNUMWithCursor(cursor, pageable,lat, lng, RADIUS);
-            }
-        }
-        else if (enumQuery.equals(StoreSearchQuery.RECOMMEND.name())) {
+        } else if (enumQuery.equals(StoreSearchQuery.RECOMMEND.name())) {
             if (cursor.equals(0L)) {
-                stores = storeRepository.findAroundOrderByLikeNumAscIdAsc(pageable,lat, lng, RADIUS);
+                stores = storeRepository.findAroundOrderByLikeNumAscIdAsc(pageable, lat, lng, RADIUS);
+            } else {
+                stores = storeRepository.findAroundOrderByLikeNumWithCursor(cursor, pageable, lat, lng, RADIUS);
             }
-            else{
-                stores = storeRepository.findAroundOrderByLikeNumWithCursor(cursor, pageable,lat, lng, RADIUS);
-            }
-        }
-        else {
+        } else {
             throw new StoreException(StoreErrorCode.UNSUPPORTED_QUERY);
         }
 
@@ -143,11 +139,13 @@ public class StoreQueryService {
             return new StoreResponseDTO.StorePageDTO(new ArrayList<>(), false, 0L); // 빈 리스트로 초기화
         }
 
-        return StoreConverter.tostorePageDTO(stores);
-
+        return StoreConverter.tostorePageDTO(stores.map(store ->
+                StoreConverter.toStorePreviewDto(store, getSlideImages(store))
+        ));
     }
 
-    //장소 검색 조회
+
+        //장소 검색 조회
     public StoreResponseDTO.StorePageDTO getStoresWithQuery(String query, float lat, float lng, String search, Long cursor, int offset){
         Pageable pageable = PageRequest.of(0, offset);
         Slice<Store> stores;
@@ -197,6 +195,8 @@ public class StoreQueryService {
             return new StoreResponseDTO.StorePageDTO(new ArrayList<>(), false,0L); // 빈 리스트로 초기화
         }
 
-        return StoreConverter.tostorePageDTO(stores);
+        return StoreConverter.tostorePageDTO(stores.map(store ->
+                StoreConverter.toStorePreviewDto(store, getSlideImages(store))
+        ));
     }
 }
