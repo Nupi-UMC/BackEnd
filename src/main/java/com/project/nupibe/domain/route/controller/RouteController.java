@@ -30,8 +30,6 @@ public class RouteController {
 
     private final RouteQueryService routeQueryService;
     private final RouteCommandService routeCommandService;
-
-  //  private final KakaoNaviService kakaoNaviService;
     private final RouteService routeService;
 
 
@@ -52,22 +50,12 @@ public class RouteController {
   
     @PostMapping
     @Operation(summary = "최적 경로 요청 API", description = "출발지, 도착지 및 경유지를 포함한 최적 경로를 요청합니다.")
-    public ResponseEntity<RouteResponseDto> getOptimalRoute(@RequestBody RouteCreateRequestDto requestDto) {
-        RouteResponseDto response = routeService.createRoute(requestDto);
+    public ResponseEntity<RouteResponseDto> getOptimalRoute(
+            @RequestHeader("Authorization") String authorizationHeader,
+            @RequestBody RouteCreateRequestDto requestDto) {
+        RouteResponseDto response = routeService.createRoute(authorizationHeader,requestDto);
         return ResponseEntity.ok(response);
     }
-
-    @GetMapping("/search")
-    @Operation(method = "GET", summary = "경로 검색 조회 API", description = "키워드 검색을 통한 경로 조회 API입니다.")
-    public CustomResponse<RouteDetailResDTO.RoutePageResponse> getRoutesWithQuery(
-            @RequestParam(value="query") String query,
-            @RequestParam(value="cursor", defaultValue = "0") int cursor,
-            @RequestParam(value = "offset", defaultValue = "8") int offset
-    ){
-        RouteDetailResDTO.RoutePageResponse result = routeQueryService.getRoutesWithQuery(query, cursor, offset);
-        return CustomResponse.onSuccess(result);
-    }
-
 
     @PostMapping("{routeId}/bookmark")
     @Operation(method = "POST", summary = "경로 북마크 API", description = "경로 조회 내 북마크 버튼을 클릭시 작동하는 기능입니다.")

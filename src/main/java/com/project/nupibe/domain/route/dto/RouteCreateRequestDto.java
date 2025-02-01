@@ -17,7 +17,6 @@ public class RouteCreateRequestDto {
     private String location;
     private LocalDateTime date;
     private String category;
-    private Long memberId; //나중에 코드 정리해야함 (없애야되는부분)
     private List<StoreDto> stores;
 
     @Getter
