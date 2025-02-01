@@ -50,10 +50,16 @@ public class StoreQueryService {
             isLiked = storeLikeRepository.existsByMemberIdAndStoreId(memberId, storeId);
             isBookmarked = memberStoreRepository.existsByMemberIdAndStoreId(memberId, storeId);
         }
+
         List<String> slideImages = getSlideImages(store);
+
+        if (slideImages == null || slideImages.isEmpty()) {
+            throw new StoreException(StoreErrorCode.IMAGE_NOT_FOUND);
+        }
 
         return StoreConverter.toStoreDetailResponseDTO(store, isLiked, isBookmarked, slideImages);
     }
+
 
     private List<String> getSlideImages(Store store) {
         List<String> slideImages = new ArrayList<>();
@@ -71,7 +77,6 @@ public class StoreQueryService {
 
     //이미지 탭
     public StoreResponseDTO.StoreImagesDTO getTabImages(Long storeId) {
-
         Store store = storeRepository.findById(storeId)
                 .orElseThrow(() -> new StoreException(StoreErrorCode.NOT_FOUND));
 
@@ -79,6 +84,10 @@ public class StoreQueryService {
                 .filter(image -> image.getType() == ImageType.TAB)
                 .map(StoreImage::getImageUrl)
                 .toList();
+
+        if (tabImages.isEmpty()) {
+            throw new StoreException(StoreErrorCode.IMAGE_NOT_FOUND);
+        }
 
         return new StoreResponseDTO.StoreImagesDTO(storeId, tabImages);
     }

@@ -15,7 +15,9 @@ public enum StoreErrorCode implements BaseErrorCode {
             "이미 가게가 존재합니다."),
     UNSUPPORTED_QUERY(HttpStatus.BAD_REQUEST,
             "STORE401",
-            "지원하지 않는 쿼리입니다.")
+            "지원하지 않는 쿼리입니다."),
+    IMAGE_NOT_FOUND(HttpStatus.NOT_FOUND, "STORE405", "해당 가게의 이미지가 존재하지 않습니다.");
+
     ;
 
 
