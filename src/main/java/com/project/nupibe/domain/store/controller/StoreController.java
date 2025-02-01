@@ -4,6 +4,7 @@ import com.project.nupibe.domain.store.dto.response.StoreResponseDTO;
 import com.project.nupibe.domain.store.service.StoreCommandService;
 import com.project.nupibe.domain.store.service.StoreQueryService;
 import com.project.nupibe.global.apiPayload.CustomResponse;
+import com.project.nupibe.global.config.SecurityUtil;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.Parameters;
@@ -24,15 +25,20 @@ import java.util.List;
 public class StoreController {
     private final StoreQueryService storeQueryService;
     private final StoreCommandService storeCommandService;
+    private final SecurityUtil securityUtil;
 
     @GetMapping("{storeId}/detail")
     @Operation(method = "GET", summary = "장소 단일 조회(detail) API", description = "장소 상세페이지 조회입니다.")
     public CustomResponse<StoreResponseDTO.StoreDetailResponseDTO> getStoreDetail(
-            @PathVariable("storeId") Long storeId,
-            @RequestParam(required = false) Long memberId) {
+            @RequestHeader("JWT-TOKEN") String authorizationHeader,
+            @PathVariable("storeId") Long storeId) {
+
+        Long memberId = securityUtil.getMemberIdFromToken(authorizationHeader);
         StoreResponseDTO.StoreDetailResponseDTO responseDTO = storeQueryService.getStoreDetail(storeId, memberId);
+
         return CustomResponse.onSuccess(responseDTO);
     }
+
     @GetMapping("{storeId}/routes")
     @Operation(method = "GET", summary = "특정 장소가 포함된 경로 조회", description = "storeId를 사용하여 해당 장소가 포함된 경로들을 조회하는 기능입니다."
     )
@@ -51,13 +57,16 @@ public class StoreController {
 
     @PostMapping("{storeId}/bookmark")
     @Operation(method = "POST", summary = "장소 북마크 API", description = "장소 조회 시 북마크 버튼을 클릭시 작동하는 기능입니다..")
-    public CustomResponse<StoreResponseDTO.savedDTO> bookmarkStore(@RequestParam Long memberId, @PathVariable("storeId") Long storeId) {
+    public CustomResponse<StoreResponseDTO.savedDTO> bookmarkStore(@RequestHeader("JWT-TOKEN") String authorizationHeader, @PathVariable("storeId") Long storeId) {
+        Long memberId = securityUtil.getMemberIdFromToken(authorizationHeader);
+
         StoreResponseDTO.savedDTO saved = storeCommandService.bookmarkStore(memberId, storeId);
         return CustomResponse.onSuccess(saved);
     }
     @PostMapping("{storeId}/like")
     @Operation(method = "POST", summary = "장소 좋아요 API", description = "장소 조회 시 좋아요 버튼을 클릭시 작동하는 기능입니다.")
-    public CustomResponse<StoreResponseDTO.savedDTO> likeStore(@RequestParam Long memberId, @PathVariable("storeId") Long storeId) {
+    public CustomResponse<StoreResponseDTO.savedDTO> likeStore(@RequestHeader("JWT-TOKEN") String authorizationHeader, @PathVariable("storeId") Long storeId) {
+        Long memberId = securityUtil.getMemberIdFromToken(authorizationHeader);
         StoreResponseDTO.savedDTO saved = storeCommandService.likeStore(memberId, storeId);
         return CustomResponse.onSuccess(saved);
     }
