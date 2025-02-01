@@ -14,8 +14,6 @@ import java.util.stream.Collectors;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class StoreConverter {
-    //entity -> previewDTO
-
     public static StoreResponseDTO.StoreDetailResponseDTO toStoreDetailResponseDTO(
             Store store,
             boolean isLiked,
@@ -43,7 +41,7 @@ public class StoreConverter {
     }
 
 
-    public static StoreResponseDTO.StorePreviewDTO toStorePreviewDto(Store store){
+    public static StoreResponseDTO.StorePreviewDTO toStorePreviewDto(Store store, List<String> slideImages){
         return StoreResponseDTO.StorePreviewDTO.builder()
                 .id(store.getId())
                 .name(store.getName())
@@ -51,26 +49,18 @@ public class StoreConverter {
                 .bookmarkNum(store.getBookmarkNum())
                 .likeNum(store.getLikeNum())
                 .location(store.getLocation())
-                .image(store.getImage())
+                .slideImages(slideImages)
                 .build();
     }
 
-    //entity리스트 -> previewDTO리스트
-    public static List<StoreResponseDTO.StorePreviewDTO> toStorePreviewList(List<Store> stores){
-        return stores.stream()
-                .map(store -> toStorePreviewDto(store))
-                .collect(Collectors.toList());
-    }
-
-    //리스트 -> slice
-    public static StoreResponseDTO.StorePageDTO tostorePageDTO(Slice<Store> stores){
-        List<StoreResponseDTO.StorePreviewDTO> storeList = toStorePreviewList(stores.getContent());
+    public static StoreResponseDTO.StorePageDTO tostorePageDTO(Slice<StoreResponseDTO.StorePreviewDTO> storePreviews) {
         return StoreResponseDTO.StorePageDTO.builder()
-                .storeList(storeList)
-                .hasNext(stores.hasNext())
-                .cursor(stores.getContent().get(stores.getContent().size() - 1).getId())
+                .storeList(storePreviews.getContent())
+                .hasNext(storePreviews.hasNext())
+                .cursor(storePreviews.getContent().isEmpty() ? 0L : storePreviews.getContent().get(storePreviews.getContent().size() - 1).id())
                 .build();
     }
+
 
     public static StoreResponseDTO.savedDTO save(Long storeId, boolean save) {
         return StoreResponseDTO.savedDTO.builder()

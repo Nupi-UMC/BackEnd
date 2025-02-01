@@ -96,7 +96,9 @@ public class StoreQueryService {
     public StoreResponseDTO.StorePreviewDTO getStorePreview(Long storeId){
         Store store = storeRepository.findById(storeId)
                 .orElseThrow(()-> new StoreException(StoreErrorCode.NOT_FOUND));
-        return StoreConverter.toStorePreviewDto(store);
+        List<String> slideImages = getSlideImages(store);
+
+        return StoreConverter.toStorePreviewDto(store, slideImages);
     }
 
     //내 위치 주변 가게 조회
@@ -152,7 +154,9 @@ public class StoreQueryService {
             return new StoreResponseDTO.StorePageDTO(new ArrayList<>(), false, 0L); // 빈 리스트로 초기화
         }
 
-        return StoreConverter.tostorePageDTO(stores);
+        return StoreConverter.tostorePageDTO(stores.map(store ->
+                StoreConverter.toStorePreviewDto(store, getSlideImages(store))
+        ));
 
     }
 
@@ -201,11 +205,13 @@ public class StoreQueryService {
             throw new StoreException(StoreErrorCode.UNSUPPORTED_QUERY);
         }
 
-         //stores가 비어있는지 확인하고 빈 리스트일 경우 처리
+        //stores가 비어있는지 확인하고 빈 리스트일 경우 처리
         if (stores.isEmpty()) {
             return new StoreResponseDTO.StorePageDTO(new ArrayList<>(), false,0L); // 빈 리스트로 초기화
         }
 
-        return StoreConverter.tostorePageDTO(stores);
+        return StoreConverter.tostorePageDTO(stores.map(store ->
+                StoreConverter.toStorePreviewDto(store, getSlideImages(store))
+        ));
     }
 }
