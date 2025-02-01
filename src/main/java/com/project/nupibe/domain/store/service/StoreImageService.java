@@ -35,12 +35,6 @@ public class StoreImageService {
         List<StoreImage> mainImages = new ArrayList<>();
         List<StoreImage> tabImages = new ArrayList<>();
 
-        // 1. 첫 번째 이미지 -> Store의 대표 이미지로 설정
-        String firstImageUrl = s3UploadService.saveFile(imageFiles.get(0));
-        store.setImage(firstImageUrl);
-        storeRepository.save(store);
-
-        // 2. 2~4번째 이미지는 MAIN 이미지로 추가
         for (int i = 1; i < Math.min(imageFiles.size(), 4); i++) {
             String mainImageUrl = s3UploadService.saveFile(imageFiles.get(i));
 
@@ -51,10 +45,10 @@ public class StoreImageService {
                     .build();
             mainImages.add(mainImage);
         }
+        storeImageRepository.saveAll(mainImages);
 
-        // 3. 모든 이미지는 TAB 이미지로 추가
-        for (MultipartFile tabImageFile : imageFiles) {
-            String tabImageUrl = s3UploadService.saveFile(tabImageFile);
+        for (int i = 0; i < imageFiles.size(); i++) {
+            String tabImageUrl = s3UploadService.saveFile(imageFiles.get(i));
 
             StoreImage tabImage = StoreImage.builder()
                     .store(store)
@@ -62,12 +56,15 @@ public class StoreImageService {
                     .type(ImageType.TAB)
                     .build();
             tabImages.add(tabImage);
+
+
+            if (i == 0) {
+                store.setImage(tabImageUrl);
+                storeRepository.save(store);
+            }
         }
 
-        // 저장
-        if (!mainImages.isEmpty()) {
-            storeImageRepository.saveAll(mainImages);
-        }
+        // 저장: TAB 이미지 저장
         storeImageRepository.saveAll(tabImages);
     }
 }
