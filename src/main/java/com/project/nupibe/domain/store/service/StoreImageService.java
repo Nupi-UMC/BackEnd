@@ -32,9 +32,7 @@ public class StoreImageService {
         Store store = storeRepository.findById(storeId)
                 .orElseThrow(() -> new IllegalArgumentException("Store not found"));
 
-        List<StoreImage> mainImages = new ArrayList<>();
-        List<StoreImage> tabImages = new ArrayList<>();
-
+        // MAIN 이미지 저장
         for (int i = 1; i < Math.min(imageFiles.size(), 4); i++) {
             String mainImageUrl = s3UploadService.saveFile(imageFiles.get(i));
 
@@ -43,10 +41,11 @@ public class StoreImageService {
                     .imageUrl(mainImageUrl)
                     .type(ImageType.MAIN)
                     .build();
-            mainImages.add(mainImage);
-        }
-        storeImageRepository.saveAll(mainImages);
 
+            storeImageRepository.save(mainImage); // 저장을 바로 수행
+        }
+
+        // TAB 이미지 저장
         for (int i = 0; i < imageFiles.size(); i++) {
             String tabImageUrl = s3UploadService.saveFile(imageFiles.get(i));
 
@@ -55,16 +54,13 @@ public class StoreImageService {
                     .imageUrl(tabImageUrl)
                     .type(ImageType.TAB)
                     .build();
-            tabImages.add(tabImage);
 
+            storeImageRepository.save(tabImage); // 저장을 바로 수행
 
-            if (i == 0) {
+            if (i == 0) { // 첫 번째 이미지를 Store의 대표 이미지로 설정
                 store.setImage(tabImageUrl);
                 storeRepository.save(store);
             }
         }
-
-        // 저장: TAB 이미지 저장
-        storeImageRepository.saveAll(tabImages);
     }
 }
