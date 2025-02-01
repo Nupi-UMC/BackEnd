@@ -2,6 +2,7 @@ package com.project.nupibe.domain.member.service;
 
 import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.model.ObjectMetadata;
+import com.project.nupibe.domain.store.repository.StoreImageRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.UrlResource;
@@ -18,24 +19,21 @@ import java.io.IOException;
 public class S3UploadService {
 
     private final AmazonS3Client amazonS3Client;
+    private final StoreImageRepository storeImageRepository; // StoreImage 테이블 조회를 위한 Repository
 
     @Value("${cloud.aws.s3.bucket}")
     private String bucket;
 
-    // 파일 업로드 시 이름을 증가시키기 위한 변수
-    private long fileIndex = 1;
-
     @Transactional
     public String saveFile(MultipartFile multipartFile) throws IOException { // 파일 업로드
-        // 증가시킬 파일 이름 생성
-        String customFileName = "image_" + fileIndex++ + ".jpg";  // 예: image_1.jpg, image_2.jpg, ...
 
-        // ObjectMetadata 객체를 사용하여 파일 메타데이터 설정
+        long fileCount = storeImageRepository.count();
+
+        String customFileName = "image_" + (fileCount + 1) + ".jpg";
         ObjectMetadata metadata = new ObjectMetadata();
         metadata.setContentLength(multipartFile.getSize());
         metadata.setContentType(multipartFile.getContentType());
 
-        // 파일을 S3에 업로드 (새로운 파일명으로 저장)
         amazonS3Client.putObject(bucket, customFileName, multipartFile.getInputStream(), metadata);
 
         return amazonS3Client.getUrl(bucket, customFileName).toString();
