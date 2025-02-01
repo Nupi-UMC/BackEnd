@@ -59,7 +59,7 @@ public interface RouteRepository extends JpaRepository<Route,Long> {
                     ST_Distance(s.coordinates1, ST_SetSRID(ST_MakePoint(:longitude, :latitude), 4326)) > (
                         SELECT ST_Distance(s3.coordinates1, ST_SetSRID(ST_MakePoint(:longitude, :latitude), 4326)) 
                         FROM store s3 
-                        JOIN routestore rs3 ON s3.id = rs3.store_id
+                        JOIN route_store rs3 ON s3.id = rs3.store_id
                         WHERE rs3.route_id = r.id AND rs3.order_index = 1 
                         AND s3.id = :cursor
                     )
