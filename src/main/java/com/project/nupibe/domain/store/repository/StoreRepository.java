@@ -14,7 +14,7 @@ public interface StoreRepository extends JpaRepository<Store, Long> {
 
     @Query("""
         SELECT new com.project.nupibe.domain.route.dto.response.RouteStoreDTO(
-                   s.id, s.name, null, null, rs.orderIndex, null, s.image
+                   s.id, s.name, null, null, rs.orderIndex, null, s.image, s.latitude, s.longitude
                )
         FROM RouteStore rs
         JOIN rs.store s

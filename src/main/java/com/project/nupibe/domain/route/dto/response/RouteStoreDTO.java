@@ -10,7 +10,9 @@ public record RouteStoreDTO(
         String category,
         Integer orderIndex,
         String distance, // 거리 정보 (nullable)
-        String image
+        String image,
+        float latitude,
+        float longitude
 ) {
     public RouteStoreDTO withDistance(String distance) {
         return new RouteStoreDTO(
@@ -20,7 +22,9 @@ public record RouteStoreDTO(
                 this.category,
                 this.orderIndex,
                 distance,
-                this.image
+                this.image,
+                this.latitude,
+                this.longitude
         );
     }
 }

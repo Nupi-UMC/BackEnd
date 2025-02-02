@@ -20,13 +20,14 @@ public class RouteConverter {
                         .storeId(store.storeId())
                         .storeName(store.name())
                         .image(store.image())
+                        .latitude(store.latitude())
+                        .longitude(store.longitude())
                         .build())
                 .collect(Collectors.toList());
 
         return RouteDetailResDTO.RouteDetailResponse.builder()
                 .routeId(route.getId())
                 .routeName(route.getRouteName())
-                .nickname(route.getMember().getNickname())
                 .content(route.getContent())
                 .location(route.getLocation())
                 .likeNum(route.getLikeNum())

@@ -10,8 +10,6 @@ public class RouteDetailResDTO {
     public record RouteDetailResponse(
             Long routeId,
             String routeName,
-
-            String nickname,
             String content,
             String location,
             int likeNum,
@@ -26,7 +24,9 @@ public class RouteDetailResDTO {
     public record StoreSummary(
             Long storeId,
             String storeName,
-            String image
+            String image,
+            float latitude,
+            float longitude
     ) {
     }
 
@@ -68,7 +68,4 @@ public class RouteDetailResDTO {
             int bookmarkNum,
             List<String> images
     ) {}
-
-
-
 }
