@@ -69,7 +69,7 @@ public interface StoreRepository extends JpaRepository<Store, Long> {
     @Query("SELECT s FROM Store s WHERE s.category = :category ORDER BY s.bookmarkNum")
     List<Store> findCategoryOrderRecommend(@Param("category") String category);
 
-    @Query("SELECT s FROM Store s WHERE s.groupInfo = :groupName")
+    @Query("SELECT DISTINCT s FROM Store s WHERE s.groupInfo = :groupName")
     List<Store> findByGroupName(@Param("groupName") String groupName);
 
     @Query("SELECT s FROM Store s WHERE s.region.id = :regionId ORDER BY ST_Distance(ST_MakePoint(s.longitude, s.latitude), ST_MakePoint(:longitude, :latitude))")
