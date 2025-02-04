@@ -5,18 +5,24 @@ import com.project.nupibe.domain.store.service.HomeCommandService;
 import com.project.nupibe.domain.store.service.HomeQueryService;
 import com.project.nupibe.global.apiPayload.CustomResponse;
 import com.project.nupibe.global.config.SecurityUtil;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.Parameters;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/home")
 @RequiredArgsConstructor
+@Tag(name = "홈 API")
 public class HomeController {
     private final HomeQueryService homeQueryService;
     private final HomeCommandService homeCommandService;
     private final SecurityUtil securityUtil;
 
     @GetMapping("")
+    @Operation(method = "GET", summary = "홈 화면 조회 API", description = "홈화면을 조회하는 API입니다.")
     public CustomResponse<HomeResponseDTO.GetHomeResponseDTO> getHome(@RequestHeader("JWT-TOKEN") String authorizationHeader) {
         Long memberId = securityUtil.getMemberIdFromToken(authorizationHeader);
 
@@ -25,6 +31,13 @@ public class HomeController {
     }
 
     @GetMapping("/search")
+    @Operation(method = "GET", summary = "놀거리 탐색 API", description = "현재 위치 주변에 있는 장소들을 조회하는 API입니다.")
+    @Parameters({
+            @Parameter(name = "latitude", description = "현재 위치의 위도 값"),
+            @Parameter(name = "longitue", description = "현재 위치의 경도 값"),
+            @Parameter(name = "category", description = "지정할 카테고리 값"),
+            @Parameter(name = "sort", description = "정렬 순서, default: 거리순 / bookamrk: 북마크순 / recommend: 추천순")
+    })
     public CustomResponse<HomeResponseDTO.entertainmentDTO> searchEntertainment
             (@RequestHeader("JWT-TOKEN") String authorizationHeader,
              @RequestParam double latitude,
@@ -38,6 +51,10 @@ public class HomeController {
     }
 
     @GetMapping("/route")
+    @Operation(method = "GET", summary = "경로 조회 API", description = "생성 또는 저장한 경로를 조회하는 API입니다.")
+    @Parameters({
+            @Parameter(name = "myRoute", description = "생성됨/저장됨 선택, created: 생성된경로/saved: 저장한경로")
+    })
     public CustomResponse<HomeResponseDTO.myRouteDTO> getRoute(
             @RequestHeader("JWT-TOKEN") String authorizationHeader,
             @RequestParam(value = "myRoute", required = true, defaultValue = "created") String routeType) {
@@ -47,7 +64,8 @@ public class HomeController {
         return CustomResponse.onSuccess(routes);
     }
 
-    @GetMapping("/{groupName}")
+    @GetMapping("/group/{groupName}")
+    @Operation(method = "GET", summary = "카테고리별 조회 API", description = "지정한 카테고리의 지점들을 조회하는 API입니다.")
     public CustomResponse<HomeResponseDTO.groupStoreDTO> getGroupStore(
             @RequestHeader("JWT-TOKEN") String authorizationHeader, @PathVariable String groupName) {
         Long memberId = securityUtil.getMemberIdFromToken(authorizationHeader);
@@ -57,6 +75,7 @@ public class HomeController {
     }
 
     @PostMapping("/save/{storeId}")
+    @Operation(method = "GET", summary = "지역별 놀거리 탐색 API", description = "현재 위치 주변에 있는 장소들을 조회하는 API입니다.")
     public CustomResponse<HomeResponseDTO.savedDTO> saveStore(@RequestHeader("JWT-TOKEN") String authorizationHeader, @PathVariable Long storeId) {
         Long memberId = securityUtil.getMemberIdFromToken(authorizationHeader);
 
@@ -65,6 +84,13 @@ public class HomeController {
     }
 
     @GetMapping("/{regionId}")
+    @Operation(method = "GET", summary = "지역별 놀거리 탐색 API", description = "현재 위치 주변에 있는 장소들을 조회하는 API입니다.")
+    @Parameters({
+            @Parameter(name = "latitude", description = "현재 위치의 위도 값"),
+            @Parameter(name = "longitue", description = "현재 위치의 경도 값"),
+            @Parameter(name = "category", description = "지정할 카테고리 값"),
+            @Parameter(name = "sort", description = "정렬 순서, default: 거리순 / bookamrk: 북마크순 / recommend: 추천순")
+    })
     public CustomResponse<HomeResponseDTO.groupStoreDTO> getRegionStore(
             @RequestHeader("JWT-TOKEN") String authorizationHeader, @PathVariable Long regionId,
             @RequestParam double latitude, @RequestParam double longitude,
