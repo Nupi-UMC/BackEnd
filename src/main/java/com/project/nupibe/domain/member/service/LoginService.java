@@ -43,8 +43,11 @@ public class LoginService {
             redisService.deleteRefreshToken(member.getEmail());
         }
 
+        Long memberId = member.getId(); // memberId 가져오기
+        String email = member.getEmail(); // email 가져오기
+
         // 4. Access Token 및 Refresh Token 생성
-        String accessToken = jwtTokenProvider.generateAccessToken(member.getEmail());
+        String accessToken = jwtTokenProvider.generateAccessToken(memberId, email);
         String refreshToken = jwtTokenProvider.generateRefreshToken(member.getEmail());
 
         // 5. Redis에 Refresh Token 저장
