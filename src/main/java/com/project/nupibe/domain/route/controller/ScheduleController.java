@@ -8,6 +8,7 @@ import com.project.nupibe.domain.route.dto.RouteDto;
 import com.project.nupibe.domain.route.service.ScheduleService;
 import com.project.nupibe.global.apiPayload.CustomResponse;
 import com.project.nupibe.global.apiPayload.code.GeneralErrorCode;
+import com.project.nupibe.global.apiPayload.exception.CustomException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -44,13 +45,11 @@ public class ScheduleController {
     @GetMapping
     public ResponseEntity<CustomResponse<?>> getScheduleByDate(
             @RequestParam String date,
-            @RequestHeader("JWT TOKEN") String authorizationHeader) {
+            @RequestHeader("JWT-TOKEN") String authorizationHeader) {
 
         // 토큰 검증하는 코드
         if (authorizationHeader == null) {
-            return ResponseEntity.badRequest().body(
-                    CustomResponse.onFailure("VALID400_1", "Authorization 헤더가 없습니다.")
-            );
+            throw new CustomException(GeneralErrorCode.UNAUTHORIZED_401);
         }
         // 토큰 잘 들어왔는지 체크
         System.out.println("Received Authorization Header: " + authorizationHeader);
@@ -64,7 +63,7 @@ public class ScheduleController {
 
             // 이메일을 사용하여 멤버 조회
             Member member = memberRepository.findByEmail(email)
-                    .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
+                    .orElseThrow(() -> new CustomException(GeneralErrorCode.MEMBER_NOT_FOUND));
 
 
             // 날짜 형식 검증 및 변환
@@ -122,9 +121,7 @@ public class ScheduleController {
             @RequestHeader("JWT-TOKEN") String authorizationHeader) {
 
         if (authorizationHeader == null) {
-            return ResponseEntity.badRequest().body(
-                    CustomResponse.onFailure("VALID400_1", "Authorization 헤더가 없습니다.")
-            );
+            throw new CustomException(GeneralErrorCode.UNAUTHORIZED_401);
         }
 
         System.out.println("Received Authorization Header: " + authorizationHeader);
@@ -136,7 +133,7 @@ public class ScheduleController {
 
             // 이메일을 사용하여 멤버 조회
             Member member = memberRepository.findByEmail(email)
-                    .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
+                    .orElseThrow(() -> new CustomException(GeneralErrorCode.MEMBER_NOT_FOUND));
 
             // 요청받은 month를 LocalDate로 파싱
             YearMonth parsedMonth = YearMonth.parse(month, DateTimeFormatter.ofPattern("yyyy-MM"));
@@ -152,9 +149,8 @@ public class ScheduleController {
 
             return ResponseEntity.ok(CustomResponse.onSuccess(responseDto));
         } catch (Exception e) {
-            return ResponseEntity.badRequest().body(
-                    CustomResponse.onFailure("VALID400_0", "잘못된 요청입니다.")
-            );
+
+            throw new CustomException(GeneralErrorCode.BAD_REQUEST_400);
         }
     }
 

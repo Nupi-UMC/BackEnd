@@ -16,6 +16,8 @@ import com.project.nupibe.domain.route.repository.RouteStoreRepository;
 import com.project.nupibe.domain.store.entity.Store;
 import com.project.nupibe.domain.store.repository.StoreRepository;
 import com.project.nupibe.global.apiPayload.CustomResponse;
+import com.project.nupibe.global.apiPayload.code.GeneralErrorCode;
+import com.project.nupibe.global.apiPayload.exception.CustomException;
 import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
@@ -53,7 +55,7 @@ public class RouteService {
 
             // Authorization 헤더 검증
             if (authorizationHeader == null  ) {
-                throw new IllegalArgumentException("VALID400_1: Authorization 헤더가 없거나 올바르지 않습니다.");
+                throw new CustomException(GeneralErrorCode.UNAUTHORIZED_401);
             }
 
             // 토큰 잘 들어왔는지 체크
@@ -69,7 +71,7 @@ public class RouteService {
         String token = authorizationHeader.substring(7); // "Bearer " 제거
         // 토큰 검증
         if (!jwtTokenProvider.validateToken(token)) {
-            throw new IllegalArgumentException("VALID401_1: 유효하지 않은 액세스 토큰입니다.");
+            throw new CustomException(GeneralErrorCode.INVALID_TOKEN);
         }
 
         System.out.println("토큰 유효성 검사 통과");
@@ -78,10 +80,14 @@ public class RouteService {
         String email = jwtTokenProvider.extractEmail(token);
         System.out.println("추출된 이메일: " + email);
 
+        // 장소가 1개 이하면 오류처리
+        if (requestDto.getStores() == null || requestDto.getStores().size() < 2) {
+            throw new CustomException(GeneralErrorCode.MINIMUM_STORES_REQUIRED);
+        }
 
         // 1. 멤버 조회 (실제로 존재하는 멤버인지) 이메일 기반으로 함
         Member member = memberRepository.findByEmail(email)
-                .orElseThrow(() -> new IllegalArgumentException("VALID404_1: 사용자를 찾을 수 없습니다."));
+                .orElseThrow(() -> new CustomException(GeneralErrorCode.MEMBER_NOT_FOUND));
         System.out.println("Authenticated Member:  " + member.getId());
 
         // System.out.println("Received Route Create Request: " + requestDto);
@@ -144,6 +150,9 @@ public class RouteService {
             Map<String, Object> responseMap = objectMapper.readValue(response, Map.class);
 
             Map<String, Object> summary = (Map<String, Object>) ((List<Map<String, Object>>) responseMap.get("routes")).get(0).get("summary");
+            if (summary == null) {
+                throw new CustomException(GeneralErrorCode.SUMMARY_APIDATA_NOT_LOAD);
+            }
 
             // 최적화된 순서의 좌표들 추출
             List<Map<String, Object>> orderedCoordinates = new ArrayList<>();
