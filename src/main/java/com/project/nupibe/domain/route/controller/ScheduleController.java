@@ -15,6 +15,8 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
@@ -44,22 +46,20 @@ public class ScheduleController {
     @Operation(summary = "날짜 일정 조회",description = "사용자의 특정 날짜의 일정을 조회합니다.")
     @GetMapping
     public ResponseEntity<CustomResponse<?>> getScheduleByDate(
-            @RequestParam String date,
-            @RequestHeader("JWT-TOKEN") String authorizationHeader) {
+            @RequestParam String date
+            ) {
 
-        // 토큰 검증하는 코드
-        if (authorizationHeader == null) {
+        // 현재 인증된 사용자 정보 가져오기
+        Authentication authentication= SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null || !authentication.isAuthenticated() ) {
             throw new CustomException(GeneralErrorCode.UNAUTHORIZED_401);
         }
-        // 토큰 잘 들어왔는지 체크
-        System.out.println("Received Authorization Header: " + authorizationHeader);
-
 
         try {
 
             // 액세스 토큰에서 사용자 이메일 추출
-            String token = authorizationHeader.substring(7); // "Bearer " 제거
-            String email = jwtTokenProvider.extractEmail(token);
+            String email = authentication.getName();
+            System.out.println("추출된 이메일: " + email);
 
             // 이메일을 사용하여 멤버 조회
             Member member = memberRepository.findByEmail(email)
@@ -116,20 +116,20 @@ public class ScheduleController {
     @GetMapping("/calendar")
     public ResponseEntity<CustomResponse<?>> getDatesWithRoutes(
             @Parameter(description = "조회할 연-월 (yyyy-MM 형식)", example = "2024-12")
-            @RequestParam String month,
-            @Parameter(description = "액세스 토큰 조회", example = "액세스 토큰을 넣으면 됩니다")
-            @RequestHeader("JWT-TOKEN") String authorizationHeader) {
+            @RequestParam String month
+            ) {
 
-        if (authorizationHeader == null) {
+        // 현재 인증된 사용자 정보 가져오기
+        Authentication authentication= SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null || !authentication.isAuthenticated() ) {
             throw new CustomException(GeneralErrorCode.UNAUTHORIZED_401);
         }
 
-        System.out.println("Received Authorization Header: " + authorizationHeader);
+        // 액세스 토큰에서 사용자 이메일 추출
+        String email = authentication.getName();
+        System.out.println("추출된 이메일: " + email);
         try {
 
-            // 액세스 토큰에서 사용자 이메일 추출
-            String token = authorizationHeader.substring(7); // "Bearer " 제거
-            String email = jwtTokenProvider.extractEmail(token);
 
             // 이메일을 사용하여 멤버 조회
             Member member = memberRepository.findByEmail(email)
