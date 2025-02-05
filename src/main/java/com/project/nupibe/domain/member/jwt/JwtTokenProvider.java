@@ -21,14 +21,23 @@ public class JwtTokenProvider {
     }
 
     // Access Token 생성
-    public String generateAccessToken(String email) {
+    public String generateAccessToken(Long memberId, String email) {
         return Jwts.builder()
                 .setSubject(email)
+                .claim("memberId", memberId) // memberId 추가
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + ACCESS_TOKEN_VALIDITY))
                 .signWith(key, SignatureAlgorithm.HS256)
                 .compact();
     }
+//    public String generateAccessToken(String email) {
+//        return Jwts.builder()
+//                .setSubject(email)
+//                .setIssuedAt(new Date())
+//                .setExpiration(new Date(System.currentTimeMillis() + ACCESS_TOKEN_VALIDITY))
+//                .signWith(key, SignatureAlgorithm.HS256)
+//                .compact();
+//    }
 
     // Refresh Token 생성
     public String generateRefreshToken(String email) {
@@ -48,6 +57,17 @@ public class JwtTokenProvider {
                 .parseClaimsJws(token)
                 .getBody()
                 .getSubject();
+    }
+
+    // 토큰에서 멤버 아이디 추출
+    public Long extractMemberId(String token) {
+        Claims claims = Jwts.parserBuilder()
+                .setSigningKey(key)
+                .build()
+                .parseClaimsJws(token)
+                .getBody();
+
+        return claims.get("memberId", Long.class);
     }
 
     // 토큰 검증

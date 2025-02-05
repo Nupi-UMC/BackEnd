@@ -24,8 +24,9 @@ public class TokenService {
             throw new MemberException(TokenErrorCode.INVALID_REFRESH_TOKEN);
         }
 
-        // 이메일 추출
+        // 이메일 및 멤버 아이디 추출
         String email = jwtTokenProvider.extractEmail(refreshToken);
+        Long memberId = jwtTokenProvider.extractMemberId(refreshToken);
 
         // Redis에 저장된 Refresh Token과 일치 여부 확인
         String storedRefreshToken = redisService.getRefreshToken(email);
@@ -34,7 +35,7 @@ public class TokenService {
         }
 
         // 새로운 Access Token 및 Refresh Token 생성
-        String newAccessToken = jwtTokenProvider.generateAccessToken(email);
+        String newAccessToken = jwtTokenProvider.generateAccessToken(memberId, email);
         String newRefreshToken = jwtTokenProvider.generateRefreshToken(email);
 
         // Redis에 새 Refresh Token 저장 (기존 토큰 대체)
