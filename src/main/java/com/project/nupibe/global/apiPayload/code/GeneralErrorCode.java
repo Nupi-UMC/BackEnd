@@ -19,8 +19,14 @@ public enum GeneralErrorCode implements BaseErrorCode{
 
 
     // 유효성 검사
-    VALIDATION_FAILED(HttpStatus.BAD_REQUEST, "VALID400_0", "잘못된 파라미터 입니다.")
-    ;
+    VALIDATION_FAILED(HttpStatus.BAD_REQUEST, "VALID400_0", "잘못된 파라미터 입니다."),
+    INVALID_TOKEN(HttpStatus.BAD_REQUEST, "VALID400_1", "유효하지 않은 액세스 토큰입니다."),
+
+
+    // 경로 관련
+    MINIMUM_STORES_REQUIRED(HttpStatus.BAD_REQUEST, "ROUTE400_1", "최소 2개 이상의 장소가 필요합니다."),
+    SUMMARY_APIDATA_NOT_LOAD(HttpStatus.NOT_FOUND, "ROUTE400_2", "카카오 API 응답에 summary 데이터가 없습니다. 주변 교통상황 문제일 수 있으니 다른 장소로 다시 한번만 시도바랍니다.");
+
 
     // 필요한 필드값 선언
     private final HttpStatus status;
