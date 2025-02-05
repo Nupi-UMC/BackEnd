@@ -14,6 +14,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+
 @Service
 @Transactional
 @RequiredArgsConstructor
@@ -21,63 +22,45 @@ public class StoreImageService {
 
     private final StoreRepository storeRepository;
     private final StoreImageRepository storeImageRepository;
-    private final S3UploadService s3UploadService;  // S3UploadService 주입
+    private final S3UploadService s3UploadService;
 
-    // 1. storeId로 Store의 image 필드에 이미지 1장 추가
-    public void updateStoreImage(Long storeId, MultipartFile imageFile) throws IOException {
+    public void uploadStoreImages(Long storeId, List<MultipartFile> imageFiles) throws IOException {
+        if (imageFiles == null || imageFiles.isEmpty()) {
+            throw new IllegalArgumentException("이미지 파일이 없습니다.");
+        }
+
         Store store = storeRepository.findById(storeId)
                 .orElseThrow(() -> new IllegalArgumentException("Store not found"));
 
-        // S3에 파일 업로드하고 URL을 가져옵니다.
-        String imageUrl = s3UploadService.saveFile(imageFile);
-
-        // Store의 image 필드에 S3 URL 저장
-        store.setImage(imageUrl);
-
-        // 변경 사항 저장
-        storeRepository.save(store);
-    }
-
-    // 2. StoreImage에 MAIN 사진 여러 장 추가
-    public void addMainImages(Long storeId, List<MultipartFile> mainImageFiles) throws IOException {
-        Store store = storeRepository.findById(storeId)
-                .orElseThrow(() -> new IllegalArgumentException("Store not found"));
-
-        List<StoreImage> mainImages = new ArrayList<>();
-        for (MultipartFile mainImageFile : mainImageFiles) {
-            // S3에 파일 업로드하고 URL을 가져옵니다.
-            String mainImageUrl = s3UploadService.saveFile(mainImageFile);
+        // MAIN 이미지 저장
+        for (int i = 1; i < Math.min(imageFiles.size(), 4); i++) {
+            String mainImageUrl = s3UploadService.saveFile(imageFiles.get(i));
 
             StoreImage mainImage = StoreImage.builder()
                     .store(store)
-                    .imageUrl(mainImageUrl) // S3 URL을 저장
+                    .imageUrl(mainImageUrl)
                     .type(ImageType.MAIN)
                     .build();
-            mainImages.add(mainImage);
+
+            storeImageRepository.save(mainImage); // 저장을 바로 수행
         }
 
-        storeImageRepository.saveAll(mainImages);
-    }
-
-    // 3. StoreImage에 TAB 사진 여러 장 추가
-    public void addTabImages(Long storeId, List<MultipartFile> tabImageFiles) throws IOException {
-        Store store = storeRepository.findById(storeId)
-                .orElseThrow(() -> new IllegalArgumentException("Store not found"));
-
-        List<StoreImage> tabImages = new ArrayList<>();
-        for (MultipartFile tabImageFile : tabImageFiles) {
-            // S3에 파일 업로드하고 URL을 가져옵니다.
-            String tabImageUrl = s3UploadService.saveFile(tabImageFile);
+        // TAB 이미지 저장
+        for (int i = 0; i < imageFiles.size(); i++) {
+            String tabImageUrl = s3UploadService.saveFile(imageFiles.get(i));
 
             StoreImage tabImage = StoreImage.builder()
                     .store(store)
-                    .imageUrl(tabImageUrl) // S3 URL을 저장
+                    .imageUrl(tabImageUrl)
                     .type(ImageType.TAB)
                     .build();
-            tabImages.add(tabImage);
-        }
 
-        storeImageRepository.saveAll(tabImages);
+            storeImageRepository.save(tabImage); // 저장을 바로 수행
+
+            if (i == 0) { // 첫 번째 이미지를 Store의 대표 이미지로 설정
+                store.setImage(tabImageUrl);
+                storeRepository.save(store);
+            }
+        }
     }
 }
-

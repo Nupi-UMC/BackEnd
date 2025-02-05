@@ -21,6 +21,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.RequestHeader;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -49,10 +50,16 @@ public class StoreQueryService {
             isLiked = storeLikeRepository.existsByMemberIdAndStoreId(memberId, storeId);
             isBookmarked = memberStoreRepository.existsByMemberIdAndStoreId(memberId, storeId);
         }
+
         List<String> slideImages = getSlideImages(store);
+
+        if (slideImages == null || slideImages.isEmpty()) {
+            throw new StoreException(StoreErrorCode.IMAGE_NOT_FOUND);
+        }
 
         return StoreConverter.toStoreDetailResponseDTO(store, isLiked, isBookmarked, slideImages);
     }
+
 
     private List<String> getSlideImages(Store store) {
         List<String> slideImages = new ArrayList<>();
@@ -70,7 +77,6 @@ public class StoreQueryService {
 
     //이미지 탭
     public StoreResponseDTO.StoreImagesDTO getTabImages(Long storeId) {
-
         Store store = storeRepository.findById(storeId)
                 .orElseThrow(() -> new StoreException(StoreErrorCode.NOT_FOUND));
 
@@ -79,6 +85,10 @@ public class StoreQueryService {
                 .map(StoreImage::getImageUrl)
                 .toList();
 
+        if (tabImages.isEmpty()) {
+            throw new StoreException(StoreErrorCode.IMAGE_NOT_FOUND);
+        }
+
         return new StoreResponseDTO.StoreImagesDTO(storeId, tabImages);
     }
 
@@ -86,7 +96,9 @@ public class StoreQueryService {
     public StoreResponseDTO.StorePreviewDTO getStorePreview(Long storeId){
         Store store = storeRepository.findById(storeId)
                 .orElseThrow(()-> new StoreException(StoreErrorCode.NOT_FOUND));
-        return StoreConverter.toStorePreviewDto(store);
+        List<String> slideImages = getSlideImages(store);
+
+        return StoreConverter.toStorePreviewDto(store, slideImages);
     }
 
     //내 위치 주변 가게 조회
@@ -142,7 +154,9 @@ public class StoreQueryService {
             return new StoreResponseDTO.StorePageDTO(new ArrayList<>(), false, 0L); // 빈 리스트로 초기화
         }
 
-        return StoreConverter.tostorePageDTO(stores);
+        return StoreConverter.tostorePageDTO(stores.map(store ->
+                StoreConverter.toStorePreviewDto(store, getSlideImages(store))
+        ));
 
     }
 
@@ -191,11 +205,13 @@ public class StoreQueryService {
             throw new StoreException(StoreErrorCode.UNSUPPORTED_QUERY);
         }
 
-         //stores가 비어있는지 확인하고 빈 리스트일 경우 처리
+        //stores가 비어있는지 확인하고 빈 리스트일 경우 처리
         if (stores.isEmpty()) {
             return new StoreResponseDTO.StorePageDTO(new ArrayList<>(), false,0L); // 빈 리스트로 초기화
         }
 
-        return StoreConverter.tostorePageDTO(stores);
+        return StoreConverter.tostorePageDTO(stores.map(store ->
+                StoreConverter.toStorePreviewDto(store, getSlideImages(store))
+        ));
     }
 }

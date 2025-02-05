@@ -24,7 +24,9 @@ public class RouteDetailResDTO {
     public record StoreSummary(
             Long storeId,
             String storeName,
-            String image
+            String image,
+            float latitude,
+            float longitude
     ) {
     }
 
@@ -66,7 +68,4 @@ public class RouteDetailResDTO {
             int bookmarkNum,
             List<String> images
     ) {}
-
-
-
 }
