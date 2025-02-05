@@ -24,16 +24,16 @@ public class MypageController {
 
     @Operation(method = "GET",summary = "사용자 정보 조회", description = "사용자 정보를 조회합니다.")
     @GetMapping("/")
-    public CustomResponse<MypageResponseDTO.MypageDTO> getMypage(@RequestHeader("JWT-TOKEN") String authorizationHeader){
-        Long memberId = securityUtil.getMemberIdFromToken(authorizationHeader);
+    public CustomResponse<MypageResponseDTO.MypageDTO> getMypage(){
+        Long memberId = securityUtil.getMemberIdFromTokens();
         MypageResponseDTO.MypageDTO responseDto = mypageService.getMypage(memberId);
         return CustomResponse.onSuccess(responseDto);
     }
 
     @Operation(method = "GET",summary = "사용자 저장 장소 조회", description = "저장한 장소들의 목록을 조회합니다.")
     @GetMapping("/stores")
-    public CustomResponse<MypageResponseDTO.MypageStoresDTO> getBookmarkStore(@RequestHeader("JWT-TOKEN") String authorizationHeader){
-        Long memberId = securityUtil.getMemberIdFromToken(authorizationHeader);
+    public CustomResponse<MypageResponseDTO.MypageStoresDTO> getBookmarkStore(){
+        Long memberId = securityUtil.getMemberIdFromTokens();
         MypageResponseDTO.MypageStoresDTO responseDto = mypageService.getMemberStore(memberId);
         return CustomResponse.onSuccess(responseDto);
     }
@@ -41,9 +41,8 @@ public class MypageController {
     @Operation(method = "GET", summary = "사용자 저장 경로 조회", description = "routeType을 받아 저장한 경로들의 목록을 조회합니다.")
     @GetMapping("/routes")
     public CustomResponse<MypageResponseDTO.MypageRoutesDTO> getBookmarkRoute(
-            @RequestHeader("JWT-TOKEN") String authorizationHeader,
             @RequestParam(value = "routeType", required = true, defaultValue = "created") String routeType) {
-        Long memberId = securityUtil.getMemberIdFromToken(authorizationHeader);
+        Long memberId = securityUtil.getMemberIdFromTokens();
         MypageResponseDTO.MypageRoutesDTO routes = mypageService.getMemberRoute(memberId, routeType);
         return CustomResponse.onSuccess(routes);
     }
