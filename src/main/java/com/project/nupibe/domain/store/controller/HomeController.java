@@ -23,8 +23,8 @@ public class HomeController {
 
     @GetMapping("")
     @Operation(method = "GET", summary = "홈 화면 조회 API", description = "홈화면을 조회하는 API입니다.")
-    public CustomResponse<HomeResponseDTO.GetHomeResponseDTO> getHome(@RequestHeader("JWT-TOKEN") String authorizationHeader) {
-        Long memberId = securityUtil.getMemberIdFromToken(authorizationHeader);
+    public CustomResponse<HomeResponseDTO.GetHomeResponseDTO> getHome() {
+        Long memberId = securityUtil.getMemberIdFromTokens();
 
         HomeResponseDTO.GetHomeResponseDTO getHomeResponseDTO = homeQueryService.getHome(memberId);
         return CustomResponse.onSuccess(getHomeResponseDTO);
@@ -39,12 +39,11 @@ public class HomeController {
             @Parameter(name = "sort", description = "정렬 순서, default: 거리순 / bookamrk: 북마크순 / recommend: 추천순")
     })
     public CustomResponse<HomeResponseDTO.entertainmentDTO> searchEntertainment
-            (@RequestHeader("JWT-TOKEN") String authorizationHeader,
-             @RequestParam double latitude,
+            (@RequestParam double latitude,
              @RequestParam double longitude,
              @RequestParam(value = "category", required = false, defaultValue = "0") int category,
              @RequestParam(value = "sort", required = false, defaultValue = "default") String sort) {
-        Long memberId = securityUtil.getMemberIdFromToken(authorizationHeader);
+        Long memberId = securityUtil.getMemberIdFromTokens();
 
         HomeResponseDTO.entertainmentDTO getEntertainmentDTO = homeQueryService.getEntertainment(memberId, latitude, longitude, category, sort);
         return CustomResponse.onSuccess(getEntertainmentDTO);
@@ -56,9 +55,8 @@ public class HomeController {
             @Parameter(name = "myRoute", description = "생성됨/저장됨 선택, created: 생성된경로/saved: 저장한경로")
     })
     public CustomResponse<HomeResponseDTO.myRouteDTO> getRoute(
-            @RequestHeader("JWT-TOKEN") String authorizationHeader,
             @RequestParam(value = "myRoute", required = true, defaultValue = "created") String routeType) {
-        Long memberId = securityUtil.getMemberIdFromToken(authorizationHeader);
+        Long memberId = securityUtil.getMemberIdFromTokens();
 
         HomeResponseDTO.myRouteDTO routes = homeQueryService.getRoute(memberId, routeType);
         return CustomResponse.onSuccess(routes);
@@ -67,8 +65,8 @@ public class HomeController {
     @GetMapping("/group/{groupName}")
     @Operation(method = "GET", summary = "카테고리별 조회 API", description = "지정한 카테고리의 지점들을 조회하는 API입니다.")
     public CustomResponse<HomeResponseDTO.groupStoreDTO> getGroupStore(
-            @RequestHeader("JWT-TOKEN") String authorizationHeader, @PathVariable String groupName) {
-        Long memberId = securityUtil.getMemberIdFromToken(authorizationHeader);
+            @PathVariable String groupName) {
+        Long memberId = securityUtil.getMemberIdFromTokens();
 
         HomeResponseDTO.groupStoreDTO stores = homeQueryService.getGroupStore(memberId, groupName);
         return CustomResponse.onSuccess(stores);
@@ -76,8 +74,8 @@ public class HomeController {
 
     @PostMapping("/save/{storeId}")
     @Operation(method = "GET", summary = "지역별 놀거리 탐색 API", description = "현재 위치 주변에 있는 장소들을 조회하는 API입니다.")
-    public CustomResponse<HomeResponseDTO.savedDTO> saveStore(@RequestHeader("JWT-TOKEN") String authorizationHeader, @PathVariable Long storeId) {
-        Long memberId = securityUtil.getMemberIdFromToken(authorizationHeader);
+    public CustomResponse<HomeResponseDTO.savedDTO> saveStore(@PathVariable Long storeId) {
+        Long memberId = securityUtil.getMemberIdFromTokens();
 
         HomeResponseDTO.savedDTO saved = homeCommandService.saveStore(memberId, storeId);
         return CustomResponse.onSuccess(saved);
@@ -92,11 +90,11 @@ public class HomeController {
             @Parameter(name = "sort", description = "정렬 순서, default: 거리순 / bookamrk: 북마크순 / recommend: 추천순")
     })
     public CustomResponse<HomeResponseDTO.groupStoreDTO> getRegionStore(
-            @RequestHeader("JWT-TOKEN") String authorizationHeader, @PathVariable Long regionId,
+            @PathVariable Long regionId,
             @RequestParam double latitude, @RequestParam double longitude,
             @RequestParam(value = "category", required = false, defaultValue = "0") int category,
             @RequestParam(value = "sort", required = false, defaultValue = "default") String sort ) {
-        Long memberId = securityUtil.getMemberIdFromToken(authorizationHeader);
+        Long memberId = securityUtil.getMemberIdFromTokens();
         HomeResponseDTO.groupStoreDTO stores = homeQueryService.getRegionStore(memberId, regionId, latitude, longitude, category, sort);
         return CustomResponse.onSuccess(stores);
     }

@@ -1,8 +1,10 @@
 package com.project.nupibe.global.config;
-
+;
+import com.project.nupibe.domain.member.exception.code.MemberErrorCode;
+import com.project.nupibe.domain.member.exception.code.TokenErrorCode;
+import com.project.nupibe.domain.member.exception.handler.MemberException;
 import com.project.nupibe.domain.member.jwt.JwtTokenProvider;
-import com.project.nupibe.domain.member.entity.Member;
-import com.project.nupibe.domain.member.repository.MemberRepository;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -11,29 +13,26 @@ import org.springframework.stereotype.Component;
 public class SecurityUtil {
 
     private final JwtTokenProvider jwtTokenProvider;
-    private final MemberRepository memberRepository;
+    private final HttpServletRequest request;
 
-    public Long getMemberIdFromToken(String authorizationHeader) {
+    public Long getMemberIdFromTokens() {
+        String authorizationHeader = request.getHeader("Authorization");
+
         if (authorizationHeader == null || !authorizationHeader.startsWith("Bearer ")) {
-            throw new IllegalArgumentException("VALID400_1: Authorization 헤더가 없거나 올바르지 않습니다.");
+            throw new MemberException(TokenErrorCode.REFRESH_TOKEN_MISSING);
         }
 
-        // "Bearer " 제거 후 토큰 추출
         String token = authorizationHeader.substring(7);
 
-        // 토큰 유효성 검사
         if (!jwtTokenProvider.validateToken(token)) {
-            throw new IllegalArgumentException("VALID401_1: 유효하지 않은 액세스 토큰입니다.");
+            throw new MemberException(TokenErrorCode.INVALID_REFRESH_TOKEN);
         }
 
-        // 토큰에서 이메일 추출
-        String email = jwtTokenProvider.extractEmail(token);
+        Long memberId = jwtTokenProvider.extractMemberId(token);
+        if (memberId == null) {
+            throw new MemberException(MemberErrorCode.NOT_FOUND);
+        }
 
-        // 이메일로 사용자 조회
-        Member member = memberRepository.findByEmail(email)
-                .orElseThrow(() -> new IllegalArgumentException("VALID404_1: 사용자를 찾을 수 없습니다."));
-
-        return member.getId();
+        return memberId;
     }
 }
-
