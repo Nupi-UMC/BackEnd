@@ -23,6 +23,9 @@ import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestHeader;
 
@@ -49,35 +52,18 @@ public class RouteService {
     private final MemberRouteRepository memberRouteRepository;
     private final JwtTokenProvider jwtTokenProvider;
 
-    public RouteResponseDto createRoute(@RequestHeader("JWT-TOKEN") String authorizationHeader, @RequestBody RouteCreateRequestDto requestDto) {
-        try {
+    public RouteResponseDto createRoute(@RequestBody RouteCreateRequestDto requestDto) {
             System.out.println("Route 생성 요청 시작");
 
-            // Authorization 헤더 검증
-            if (authorizationHeader == null  ) {
+            // 현재 인증된 사용자 정보 가져오기
+            Authentication authentication= SecurityContextHolder.getContext().getAuthentication();
+            if (authentication == null || !authentication.isAuthenticated() ) {
                 throw new CustomException(GeneralErrorCode.UNAUTHORIZED_401);
             }
 
-            // 토큰 잘 들어왔는지 체크
-            System.out.println("Received Authorization Header: " + authorizationHeader);
-
-        } catch (Exception e) {
-            e.printStackTrace(); // 예외 발생 시 출력
-            throw e; // 예외 다시 던지기
-
-        }
 
         // 액세스 토큰에서 사용자 이메일 추출
-        String token = authorizationHeader.substring(7); // "Bearer " 제거
-        // 토큰 검증
-        if (!jwtTokenProvider.validateToken(token)) {
-            throw new CustomException(GeneralErrorCode.INVALID_TOKEN);
-        }
-
-        System.out.println("토큰 유효성 검사 통과");
-
-        // 액세스 토큰에서 사용자 이메일 추출
-        String email = jwtTokenProvider.extractEmail(token);
+        String email = authentication.getName();
         System.out.println("추출된 이메일: " + email);
 
         // 장소가 1개 이하면 오류처리
@@ -89,9 +75,6 @@ public class RouteService {
         Member member = memberRepository.findByEmail(email)
                 .orElseThrow(() -> new CustomException(GeneralErrorCode.MEMBER_NOT_FOUND));
         System.out.println("Authenticated Member:  " + member.getId());
-
-        // System.out.println("Received Route Create Request: " + requestDto);
-
 
 
         // 1. storeId로 가게 조회 후 주소 가져오기
