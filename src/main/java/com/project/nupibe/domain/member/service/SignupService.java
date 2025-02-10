@@ -10,17 +10,21 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+
 @Service
 public class SignupService {
 
     private final MemberRepository memberRepository;
     private final RedisService redisService;
     private final PasswordEncoder passwordEncoder;
+    private final S3UploadService s3UploadService;
 
-    public SignupService(MemberRepository memberRepository, RedisService redisService, PasswordEncoder passwordEncoder) {
+    public SignupService(MemberRepository memberRepository, RedisService redisService, PasswordEncoder passwordEncoder, S3UploadService s3UploadService) {
         this.memberRepository = memberRepository;
         this.redisService = redisService;
         this.passwordEncoder = passwordEncoder;
+        this.s3UploadService = s3UploadService;
     }
 
     public Long signup(RequestSignupDto signupDto, MultipartFile profileImage) {
@@ -51,8 +55,11 @@ public class SignupService {
 
     private String uploadProfileImage(MultipartFile profileImage) {
         if (profileImage != null && !profileImage.isEmpty()) {
-            // S3 또는 로컬 저장소에 업로드하는 로직 (여기서는 기본값 설정)
-            return "https://your-s3-bucket.com/" + profileImage.getOriginalFilename();
+            try {
+                return s3UploadService.saveFile(profileImage); // S3 업로드 후 URL 반환
+            } catch (IOException e) {
+                throw new RuntimeException("프로필 이미지 업로드 실패", e);
+            }
         }
         return "https://your-default-image.com/default.png"; // 기본 프로필 이미지
     }
