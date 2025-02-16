@@ -46,6 +46,7 @@ public class StoreConverter {
                 .id(store.getId())
                 .name(store.getName())
                 .groupInfo(store.getGroupInfo())
+                .category(store.getCategory())
                 .bookmarkNum(store.getBookmarkNum())
                 .likeNum(store.getLikeNum())
                 .location(store.getLocation())

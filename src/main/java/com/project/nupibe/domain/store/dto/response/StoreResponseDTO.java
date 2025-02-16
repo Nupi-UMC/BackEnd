@@ -46,6 +46,7 @@ public class StoreResponseDTO {
     public record StorePreviewDTO(
             Long id,
             List<String> slideImages,
+            String category,
             String name,
             String groupInfo,
             String location,
