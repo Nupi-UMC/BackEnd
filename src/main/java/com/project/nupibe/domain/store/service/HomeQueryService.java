@@ -54,7 +54,7 @@ public class HomeQueryService {
     public HomeResponseDTO.entertainmentDTO getEntertainment(Long memberId, double latitude, double longitude, int selected, String sort) {
         Member member = memberRepository.findById(memberId).orElseThrow(() -> new MemberException(MemberErrorCode.NOT_FOUND));
 
-        List<String> categories = List.of("전체", "굿즈샵", "맛집", "소품샵", "전시", "카페", "테마카페", "팝업");
+        List<String> categories = List.of("전체", "소품샵", "굿즈샵", "맛집", "카페", "테마카페", "팝업", "전시", "클래스");
         HomeResponseDTO.categoryDTO category = HomeConverter.toCategoryDTO(categories, selected);
 
         int sortId = 0;
@@ -79,7 +79,7 @@ public class HomeQueryService {
     public HomeResponseDTO.groupStoreDTO getRegionStore(Long memberId, Long regionId, double latitude, double longitude, int selected, String sort) {
         Member member = memberRepository.findById(memberId).orElseThrow(() -> new MemberException(MemberErrorCode.NOT_FOUND));
 
-        List<String> categories = List.of("전체", "굿즈샵", "맛집", "소품샵", "전시", "카페", "테마카페", "팝업");
+        List<String> categories = List.of("전체", "소품샵", "굿즈샵", "맛집", "카페", "테마카페", "팝업", "전시", "클래스");
         HomeResponseDTO.categoryDTO category = HomeConverter.toCategoryDTO(categories, selected);
 
         int sortId = 0;
