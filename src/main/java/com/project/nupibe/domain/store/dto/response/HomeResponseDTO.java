@@ -38,6 +38,9 @@ public class HomeResponseDTO {
 
     @Builder
     public record groupStoreDTO(
+            SpotDescription best,
+            SpotDescription ad,
+            SpotDescription newStore,
             List<storeDTO> stores
     ) {};
 

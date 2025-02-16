@@ -85,6 +85,12 @@ public class HomeQueryService {
     }
 
     public HomeResponseDTO.groupStoreDTO getRegionStore(Long memberId, Long regionId, double latitude, double longitude, int selected, String sort) {
+        List<Store> storesWithDescription = storeRepository.findAllWithDescription();
+        random.setSeed(System.currentTimeMillis());
+        Store best = storesWithDescription.get(random.nextInt(storesWithDescription.size()));
+        Store ad = storesWithDescription.get(random.nextInt(storesWithDescription.size()));
+        Store newStore = storeRepository.findLatestStoreWithContent();
+
         List<String> categories = List.of("전체", "소품샵", "굿즈샵", "맛집", "카페", "테마카페", "팝업", "전시", "클래스");
         HomeResponseDTO.categoryDTO category = HomeConverter.toCategoryDTO(categories, selected);
 
@@ -103,7 +109,7 @@ public class HomeQueryService {
             isFavors.add(isFavor);
         }
         List<HomeResponseDTO.storeDTO> storeList = HomeConverter.toStoreDTO(isFavors, stores);
-        return HomeConverter.toRegionStoreDTO(storeList);
+        return HomeConverter.toRegionStoreDTO(HomeConverter.toSpotDescriptionDTO(best), HomeConverter.toSpotDescriptionDTO(ad), HomeConverter.toSpotDescriptionDTO(newStore), storeList);
     }
 
     private List<Store> getStoreByConditions(List<String> categories, int selected, int sortId, double latitude, double longitude) {
@@ -162,12 +168,18 @@ public class HomeQueryService {
     }
 
     public HomeResponseDTO.groupStoreDTO getGroupStore(Long memberId, String groupName) {
+        List<Store> storesWithDescription = storeRepository.findAllWithDescription();
+        random.setSeed(System.currentTimeMillis());
+        Store best = storesWithDescription.get(random.nextInt(storesWithDescription.size()));
+        Store ad = storesWithDescription.get(random.nextInt(storesWithDescription.size()));
+        Store newStore = storeRepository.findLatestStoreWithContent();
+
         List<Store> stores = storeRepository.findByGroupName(groupName);
         List<Boolean> isFavors = new ArrayList<>();
         for(Store store : stores) {
             boolean isFavor = memberStoreRepository.existsByMemberIdAndStoreId(memberId, store.getId());
             isFavors.add(isFavor);
         }
-        return HomeConverter.toGroupStoreDTO(stores, isFavors);
+        return HomeConverter.toGroupStoreDTO(HomeConverter.toSpotDescriptionDTO(best), HomeConverter.toSpotDescriptionDTO(ad), HomeConverter.toSpotDescriptionDTO(newStore), stores, isFavors);
     }
 }

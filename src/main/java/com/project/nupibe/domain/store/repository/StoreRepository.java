@@ -312,4 +312,7 @@ public interface StoreRepository extends JpaRepository<Store, Long> {
 
     @Query("SELECT s FROM Store s WHERE s.content != 'X'")
     List<Store> findAllWithDescription();
+
+    @Query("SELECT s FROM Store s WHERE s.content != 'X' ORDER BY s.createdAt DESC")
+    Store findLatestStoreWithContent();
 }

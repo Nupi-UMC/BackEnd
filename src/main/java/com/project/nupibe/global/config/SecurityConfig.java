@@ -34,8 +34,7 @@ public class SecurityConfig {
                                 "/v3/api-docs/**",
                                 "/v3/api-docs.yaml",
                                 "/swagger-ui.html",
-                                "/api/signup",
-                                "/api/home/**"
+                                "/api/signup"
                         ).permitAll() // Swagger 경로 허용
                         .requestMatchers("/api/**").permitAll()
                         .anyRequest().authenticated() // 나머지 요청은 인증 필요

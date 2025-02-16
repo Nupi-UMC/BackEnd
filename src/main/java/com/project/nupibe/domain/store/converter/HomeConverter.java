@@ -90,7 +90,7 @@ public class HomeConverter {
                 .routes(list).build();
     }
 
-    public static HomeResponseDTO.groupStoreDTO toGroupStoreDTO(List<Store> stores, List<Boolean> isFavors) {
+    public static HomeResponseDTO.groupStoreDTO toGroupStoreDTO(HomeResponseDTO.SpotDescription best, HomeResponseDTO.SpotDescription ad, HomeResponseDTO.SpotDescription newStore, List<Store> stores, List<Boolean> isFavors) {
         List<HomeResponseDTO.storeDTO> list = new ArrayList<>();
 
         for(int i = 0; i < stores.size(); i++) {
@@ -103,6 +103,7 @@ public class HomeConverter {
             list.add(store);
         }
         return HomeResponseDTO.groupStoreDTO.builder()
+                .best(best).ad(ad).newStore(newStore)
                 .stores(list).build();
     }
 
@@ -112,10 +113,19 @@ public class HomeConverter {
                 .saved(save).build();
     }
 
-    public static HomeResponseDTO.groupStoreDTO toRegionStoreDTO(List<HomeResponseDTO.storeDTO> stores) {
+    public static HomeResponseDTO.groupStoreDTO toRegionStoreDTO(HomeResponseDTO.SpotDescription best, HomeResponseDTO.SpotDescription ad, HomeResponseDTO.SpotDescription newStore, List<HomeResponseDTO.storeDTO> stores) {
         return HomeResponseDTO.groupStoreDTO.builder()
+                .best(best).ad(ad).newStore(newStore)
                 .stores(stores)
                 .build();
+    }
+
+    public static HomeResponseDTO.SpotDescription toSpotDescriptionDTO(Store store) {
+        return HomeResponseDTO.SpotDescription.builder()
+                .name(store.getName())
+                .place(store.getRegion().getName())
+                .location(store.getLocation())
+                .description(store.getContent()).build();
     }
 
     public static List<HomeResponseDTO.SpotDescription> toSpotDescriptionDTOs(List<Store> stores) {
