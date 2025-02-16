@@ -68,6 +68,7 @@ public class RouteConverter {
         return RouteDetailResDTO.RoutePreviewResponse.builder()
                 .routeId(route.getId())
                 .routeName(route.getRouteName())
+                .category(route.getCategory())
                 .image(stores)
                 .location(route.getLocation())
                 .likeNum(route.getLikeNum())

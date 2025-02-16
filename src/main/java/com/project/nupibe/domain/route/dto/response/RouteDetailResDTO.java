@@ -41,6 +41,7 @@ public class RouteDetailResDTO {
     public record RoutePreviewResponse(
             Long routeId,
             String routeName,
+            String category,
             List<StoreImage> image,
             String location,
             int likeNum,
