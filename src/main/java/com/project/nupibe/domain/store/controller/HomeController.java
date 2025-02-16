@@ -85,7 +85,7 @@ public class HomeController {
     @Operation(method = "GET", summary = "지역별 놀거리 탐색 API", description = "현재 위치 주변에 있는 장소들을 조회하는 API입니다.")
     @Parameters({
             @Parameter(name = "latitude", description = "현재 위치의 위도 값"),
-            @Parameter(name = "longitue", description = "현재 위치의 경도 값"),
+            @Parameter(name = "longitude", description = "현재 위치의 경도 값"),
             @Parameter(name = "category", description = "지정할 카테고리 값"),
             @Parameter(name = "sort", description = "정렬 순서, default: 거리순 / bookamrk: 북마크순 / recommend: 추천순")
     })
