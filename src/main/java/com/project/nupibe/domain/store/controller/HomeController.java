@@ -24,9 +24,9 @@ public class HomeController {
     @GetMapping("")
     @Operation(method = "GET", summary = "홈 화면 조회 API", description = "홈화면을 조회하는 API입니다.")
     public CustomResponse<HomeResponseDTO.GetHomeResponseDTO> getHome() {
-        Long memberId = securityUtil.getMemberIdFromTokens();
+        //Long memberId = securityUtil.getMemberIdFromTokens();
 
-        HomeResponseDTO.GetHomeResponseDTO getHomeResponseDTO = homeQueryService.getHome(memberId);
+        HomeResponseDTO.GetHomeResponseDTO getHomeResponseDTO = homeQueryService.getHome(16L);
         return CustomResponse.onSuccess(getHomeResponseDTO);
     }
 

@@ -6,8 +6,16 @@ import java.util.List;
 public class HomeResponseDTO {
     @Builder
     public record GetHomeResponseDTO(
+            UpcommingScheduleDTO Upcomming,
             List<groupNameDTO> groupList,
-            List<regionDTO> regions
+            List<regionDTO> regions,
+            List<SpotDescription> steadySpots
+    ) {}
+
+    @Builder
+    public record UpcommingScheduleDTO(
+            String title,
+            String date
     ) {}
 
     @Builder
@@ -66,4 +74,12 @@ public class HomeResponseDTO {
             Long storeId,
             boolean saved
     ) {};
+
+    @Builder
+    public record SpotDescription(
+            String name,
+            String place,
+            String location,
+            String description
+    ) {}
 }
