@@ -19,8 +19,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 @Service
 @RequiredArgsConstructor
@@ -34,26 +36,32 @@ public class HomeQueryService {
     private final RouteStoreRepository routeStoreRepository;
     private final MemberStoreRepository memberStoreRepository;
 
-    public HomeResponseDTO.GetHomeResponseDTO getHome(Long memberId) {
-        Member member = memberRepository.findById(memberId).orElseThrow(() -> new MemberException(MemberErrorCode.NOT_FOUND));
+    private final List<String> regions = List.of("홍대", "성수", "을지로", "안국");
+    private final Random random = new Random();
 
-        List<String> groupNames = storeRepository.findAllGroup();
+    public HomeResponseDTO.GetHomeResponseDTO getHome(Long memberId) {
+        LocalDateTime now = LocalDateTime.now();
+        Route upcomming = routeRepository.getLatestRoute(memberRepository.findById(memberId).get(), now);
+
+        List<String> groupNames = storeRepository.findDistinctGroupName();
         List<HomeResponseDTO.groupNameDTO> groupList = HomeConverter.toGroupName(groupNames);
 
-        List<HomeResponseDTO.regionDTO> regions = new ArrayList<>();
-        for(Region region : regionRepository.findAll()) {
-            int id = region.getId();
-            String name = region.getName();
-            HomeResponseDTO.regionDTO place = HomeConverter.toRegionDTO(id, name);
-            regions.add(place);
+        List<String> regionList = new ArrayList<>();
+        regionList.add("내 주변");
+        for(int i = 0; i < regions.size(); i++) {
+            regionList.add(regions.get(i));
         }
 
-        return HomeConverter.toGetHome(groupList, regions);
+        List<Store> storesWithDescription = storeRepository.findAllWithDescription();
+        List<Store> steadySpots = new ArrayList<>();
+        random.setSeed(System.currentTimeMillis());
+        steadySpots.add(storesWithDescription.get(random.nextInt(storesWithDescription.size())));
+        steadySpots.add(storesWithDescription.get(random.nextInt(storesWithDescription.size())));
+
+        return HomeConverter.toGetHome(HomeConverter.toUpcommingSchduleDTO(upcomming), groupList, HomeConverter.toRegionDTOs(regionList), HomeConverter.toSpotDescriptionDTOs(steadySpots));
     }
 
     public HomeResponseDTO.entertainmentDTO getEntertainment(Long memberId, double latitude, double longitude, int selected, String sort) {
-        Member member = memberRepository.findById(memberId).orElseThrow(() -> new MemberException(MemberErrorCode.NOT_FOUND));
-
         List<String> categories = List.of("전체", "소품샵", "굿즈샵", "맛집", "카페", "테마카페", "팝업", "전시", "클래스");
         HomeResponseDTO.categoryDTO category = HomeConverter.toCategoryDTO(categories, selected);
 
@@ -68,7 +76,7 @@ public class HomeQueryService {
 
         List<Boolean> isFavors = new ArrayList<>();
         for(Store store : stores) {
-            boolean isFavor = memberStoreRepository.existsByMemberIdAndStoreId(member.getId(), store.getId());
+            boolean isFavor = memberStoreRepository.existsByMemberIdAndStoreId(memberId, store.getId());
             isFavors.add(isFavor);
         }
         List<HomeResponseDTO.storeDTO> storeList = HomeConverter.toStoreDTO(isFavors, stores);
@@ -77,7 +85,11 @@ public class HomeQueryService {
     }
 
     public HomeResponseDTO.groupStoreDTO getRegionStore(Long memberId, Long regionId, double latitude, double longitude, int selected, String sort) {
-        Member member = memberRepository.findById(memberId).orElseThrow(() -> new MemberException(MemberErrorCode.NOT_FOUND));
+        List<Store> storesWithDescription = storeRepository.findAllWithDescription();
+        random.setSeed(System.currentTimeMillis());
+        Store best = storesWithDescription.get(random.nextInt(storesWithDescription.size()));
+        Store ad = storesWithDescription.get(random.nextInt(storesWithDescription.size()));
+        Store newStore = storeRepository.findLatestStoreWithContent();
 
         List<String> categories = List.of("전체", "소품샵", "굿즈샵", "맛집", "카페", "테마카페", "팝업", "전시", "클래스");
         HomeResponseDTO.categoryDTO category = HomeConverter.toCategoryDTO(categories, selected);
@@ -93,11 +105,11 @@ public class HomeQueryService {
 
         List<Boolean> isFavors = new ArrayList<>();
         for(Store store : stores) {
-            boolean isFavor = memberStoreRepository.existsByMemberIdAndStoreId(member.getId(), store.getId());
+            boolean isFavor = memberStoreRepository.existsByMemberIdAndStoreId(memberId, store.getId());
             isFavors.add(isFavor);
         }
         List<HomeResponseDTO.storeDTO> storeList = HomeConverter.toStoreDTO(isFavors, stores);
-        return HomeConverter.toRegionStoreDTO(storeList);
+        return HomeConverter.toRegionStoreDTO(HomeConverter.toSpotDescriptionDTO(best), HomeConverter.toSpotDescriptionDTO(ad), HomeConverter.toSpotDescriptionDTO(newStore), storeList);
     }
 
     private List<Store> getStoreByConditions(List<String> categories, int selected, int sortId, double latitude, double longitude) {
@@ -137,15 +149,13 @@ public class HomeQueryService {
     }
 
     public HomeResponseDTO.myRouteDTO getRoute(Long memberId, String routeType) {
-        Member member = memberRepository.findById(memberId).orElseThrow(() -> new MemberException(MemberErrorCode.NOT_FOUND));
-
         List<Route> routes = new ArrayList<>();
         switch (routeType) {
             case "created" :
-                routes = routeRepository.findByMember(member);
+                routes = routeRepository.findByMember(memberRepository.findById(memberId).get());
                 break;
             case "saved" :
-                routes = memberRouteRepository.findByMember(member);
+                routes = memberRouteRepository.findByMember(memberRepository.findById(memberId).get());
         }
 
         List<String> images = new ArrayList<>();
@@ -158,14 +168,18 @@ public class HomeQueryService {
     }
 
     public HomeResponseDTO.groupStoreDTO getGroupStore(Long memberId, String groupName) {
-        Member member = memberRepository.findById(memberId).orElseThrow(() -> new MemberException(MemberErrorCode.NOT_FOUND));
+        List<Store> storesWithDescription = storeRepository.findAllWithDescription();
+        random.setSeed(System.currentTimeMillis());
+        Store best = storesWithDescription.get(random.nextInt(storesWithDescription.size()));
+        Store ad = storesWithDescription.get(random.nextInt(storesWithDescription.size()));
+        Store newStore = storeRepository.findLatestStoreWithContent();
 
         List<Store> stores = storeRepository.findByGroupName(groupName);
         List<Boolean> isFavors = new ArrayList<>();
         for(Store store : stores) {
-            boolean isFavor = memberStoreRepository.existsByMemberIdAndStoreId(member.getId(), store.getId());
+            boolean isFavor = memberStoreRepository.existsByMemberIdAndStoreId(memberId, store.getId());
             isFavors.add(isFavor);
         }
-        return HomeConverter.toGroupStoreDTO(stores, isFavors);
+        return HomeConverter.toGroupStoreDTO(HomeConverter.toSpotDescriptionDTO(best), HomeConverter.toSpotDescriptionDTO(ad), HomeConverter.toSpotDescriptionDTO(newStore), stores, isFavors);
     }
 }

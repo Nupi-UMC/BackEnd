@@ -306,4 +306,13 @@ public interface StoreRepository extends JpaRepository<Store, Long> {
     ORDER BY cursorTable.cursorValue DESC 
 """, nativeQuery = true)
     Slice<Store> findBySearchOrderByLikeNumWithCursor(@Param("cursor") Long cursor, Pageable pageable, @Param("search") String search);
+
+    @Query("SELECT DISTINCT s.groupInfo FROM Store s")
+    List<String> findDistinctGroupName();
+
+    @Query("SELECT s FROM Store s WHERE s.content != 'X'")
+    List<Store> findAllWithDescription();
+
+    @Query("SELECT s FROM Store s WHERE s.content != 'X' ORDER BY s.createdAt DESC")
+    Store findLatestStoreWithContent();
 }

@@ -1,6 +1,7 @@
 package com.project.nupibe.domain.store.converter;
 
 import com.project.nupibe.domain.member.entity.Member;
+import com.project.nupibe.domain.region.entity.Region;
 import com.project.nupibe.domain.route.entity.Route;
 import com.project.nupibe.domain.store.dto.response.HomeResponseDTO;
 import com.project.nupibe.domain.store.entity.Store;
@@ -9,14 +10,28 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class HomeConverter {
-    public static HomeResponseDTO.GetHomeResponseDTO toGetHome(List<HomeResponseDTO.groupNameDTO> groups, List<HomeResponseDTO.regionDTO> regions) {
-        return new HomeResponseDTO.GetHomeResponseDTO(groups, regions);
+    public static HomeResponseDTO.GetHomeResponseDTO toGetHome(HomeResponseDTO.UpcommingScheduleDTO upcomming, List<HomeResponseDTO.groupNameDTO> groups, List<HomeResponseDTO.regionDTO> regions, List<HomeResponseDTO.SpotDescription> steadySpots) {
+        return new HomeResponseDTO.GetHomeResponseDTO(upcomming, groups, regions, steadySpots);
     }
 
-    public static HomeResponseDTO.regionDTO toRegionDTO(int id, String name) {
-        return HomeResponseDTO.regionDTO.builder()
-                .regionId(id)
-                .regionName(name).build();
+    public static HomeResponseDTO.UpcommingScheduleDTO toUpcommingSchduleDTO(Route route) {
+        if(route == null) return null;
+        return HomeResponseDTO.UpcommingScheduleDTO.builder()
+                .title(route.getRouteName())
+                .date(route.getCreatedAt().toString())
+                .build();
+    }
+
+    public static List<HomeResponseDTO.regionDTO> toRegionDTOs(List<String> regionNameList) {
+        List<HomeResponseDTO.regionDTO> regionDTOList = new ArrayList<>();
+        int i = 0;
+        for(String region : regionNameList) {
+            HomeResponseDTO.regionDTO temp = HomeResponseDTO.regionDTO.builder()
+                    .regionId(i).regionName(region).build();
+            i++;
+            regionDTOList.add(temp);
+        }
+        return regionDTOList;
     }
 
     public static List<HomeResponseDTO.groupNameDTO> toGroupName(List<String> names) {
@@ -75,7 +90,7 @@ public class HomeConverter {
                 .routes(list).build();
     }
 
-    public static HomeResponseDTO.groupStoreDTO toGroupStoreDTO(List<Store> stores, List<Boolean> isFavors) {
+    public static HomeResponseDTO.groupStoreDTO toGroupStoreDTO(HomeResponseDTO.SpotDescription best, HomeResponseDTO.SpotDescription ad, HomeResponseDTO.SpotDescription newStore, List<Store> stores, List<Boolean> isFavors) {
         List<HomeResponseDTO.storeDTO> list = new ArrayList<>();
 
         for(int i = 0; i < stores.size(); i++) {
@@ -88,6 +103,7 @@ public class HomeConverter {
             list.add(store);
         }
         return HomeResponseDTO.groupStoreDTO.builder()
+                .best(best).ad(ad).newStore(newStore)
                 .stores(list).build();
     }
 
@@ -97,9 +113,31 @@ public class HomeConverter {
                 .saved(save).build();
     }
 
-    public static HomeResponseDTO.groupStoreDTO toRegionStoreDTO(List<HomeResponseDTO.storeDTO> stores) {
+    public static HomeResponseDTO.groupStoreDTO toRegionStoreDTO(HomeResponseDTO.SpotDescription best, HomeResponseDTO.SpotDescription ad, HomeResponseDTO.SpotDescription newStore, List<HomeResponseDTO.storeDTO> stores) {
         return HomeResponseDTO.groupStoreDTO.builder()
+                .best(best).ad(ad).newStore(newStore)
                 .stores(stores)
                 .build();
+    }
+
+    public static HomeResponseDTO.SpotDescription toSpotDescriptionDTO(Store store) {
+        return HomeResponseDTO.SpotDescription.builder()
+                .name(store.getName())
+                .place(store.getRegion().getName())
+                .location(store.getLocation())
+                .description(store.getContent()).build();
+    }
+
+    public static List<HomeResponseDTO.SpotDescription> toSpotDescriptionDTOs(List<Store> stores) {
+        List<HomeResponseDTO.SpotDescription> list = new ArrayList<>();
+        for(Store store : stores) {
+            HomeResponseDTO.SpotDescription temp = HomeResponseDTO.SpotDescription.builder()
+                    .name(store.getName())
+                    .place(store.getRegion().getName())
+                    .location(store.getLocation())
+                    .description(store.getContent()).build();
+            list.add(temp);
+        }
+        return list;
     }
 }

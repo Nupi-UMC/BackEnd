@@ -149,6 +149,9 @@ public interface RouteRepository extends JpaRepository<Route,Long> {
     ORDER BY cursorTable.cursorValue DESC 
     """, nativeQuery = true)
     Slice<Route> findBySearchOrderByLikeNumWithCursor(@Param("cursor") Long cursor, Pageable pageable, @Param("search") String search);
+
+    @Query("SELECT r FROM Route r WHERE r.member = :member AND r.date >= :now ORDER BY r.date ASC")
+    Route getLatestRoute(@Param("member") Member member, @Param("now") LocalDateTime now);
 }
 
 

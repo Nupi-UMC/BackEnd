@@ -24,9 +24,9 @@ public class HomeController {
     @GetMapping("")
     @Operation(method = "GET", summary = "홈 화면 조회 API", description = "홈화면을 조회하는 API입니다.")
     public CustomResponse<HomeResponseDTO.GetHomeResponseDTO> getHome() {
-        Long memberId = securityUtil.getMemberIdFromTokens();
+        //Long memberId = securityUtil.getMemberIdFromTokens();
 
-        HomeResponseDTO.GetHomeResponseDTO getHomeResponseDTO = homeQueryService.getHome(memberId);
+        HomeResponseDTO.GetHomeResponseDTO getHomeResponseDTO = homeQueryService.getHome(16L);
         return CustomResponse.onSuccess(getHomeResponseDTO);
     }
 
@@ -73,7 +73,7 @@ public class HomeController {
     }
 
     @PostMapping("/save/{storeId}")
-    @Operation(method = "GET", summary = "지역별 놀거리 탐색 API", description = "현재 위치 주변에 있는 장소들을 조회하는 API입니다.")
+    @Operation(method = "POST", summary = "놀거리 저장 API", description = "지정한 장소를 저장하는 API입니다.")
     public CustomResponse<HomeResponseDTO.savedDTO> saveStore(@PathVariable Long storeId) {
         Long memberId = securityUtil.getMemberIdFromTokens();
 
