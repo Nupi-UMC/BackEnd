@@ -89,7 +89,8 @@ public class HomeQueryService {
         random.setSeed(System.currentTimeMillis());
         Store best = storesWithDescription.get(random.nextInt(storesWithDescription.size()));
         Store ad = storesWithDescription.get(random.nextInt(storesWithDescription.size()));
-        Store newStore = storeRepository.findLatestStoreWithContent();
+        List<Store> newStores = storeRepository.findLatestStoreWithContent();
+        Store newStore = newStores.get(0);
 
         List<String> categories = List.of("전체", "소품샵", "굿즈샵", "맛집", "카페", "테마카페", "팝업", "전시", "클래스");
         HomeResponseDTO.categoryDTO category = HomeConverter.toCategoryDTO(categories, selected);
@@ -172,7 +173,8 @@ public class HomeQueryService {
         random.setSeed(System.currentTimeMillis());
         Store best = storesWithDescription.get(random.nextInt(storesWithDescription.size()));
         Store ad = storesWithDescription.get(random.nextInt(storesWithDescription.size()));
-        Store newStore = storeRepository.findLatestStoreWithContent();
+        List<Store> newStores = storeRepository.findLatestStoreWithContent();
+        Store newStore = newStores.get(0);
 
         List<Store> stores = storeRepository.findByGroupName(groupName);
         List<Boolean> isFavors = new ArrayList<>();
