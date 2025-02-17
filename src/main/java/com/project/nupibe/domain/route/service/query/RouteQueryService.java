@@ -44,6 +44,16 @@ public class RouteQueryService {
         Route route = routeRepository.findById(routeId)
                 .orElseThrow(() -> new RouteException(RouteErrorCode.ROUTE_NOT_FOUND));
 
+        // 2. 네이티브 쿼리 결과를 DTO로 매핑
+        List<Object[]> results = storeRepository.findStoresWithCalculatedDistance(routeId);
+        List<RouteStoreDTO> places = mapToRouteStoreDTO(results);
+
+        // 3. 첫 번째 장소의 distance를 null로 처리
+        if (!places.isEmpty()) {
+            RouteStoreDTO firstPlace = places.get(0);
+            places.set(0, firstPlace.withDistance("첫번째장소"));
+        }
+
         boolean isLiked = false;
         boolean isBookmarked = false;
 
@@ -55,9 +65,9 @@ public class RouteQueryService {
             isBookmarked = memberRouteRepository.existsByMemberIdAndRouteId(memberId, routeId);
         }
 
-        List<RouteStoreDTO> storeList = storeRepository.findStoresByRouteId(routeId);
+        //List<RouteStoreDTO> storeList = storeRepository.findStoresByRouteId(routeId);
 
-        return RouteConverter.convertToRouteDetailDTO(route, isLiked, isBookmarked,  storeList);
+        return RouteConverter.convertToRouteDetailDTO(route, isLiked, isBookmarked, places);
     }
 
     public RoutePlacesResDTO.RoutePlacesResponse getRoutePlaces(Long routeId) {

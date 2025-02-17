@@ -20,6 +20,8 @@ public class RouteConverter {
                         .storeId(store.storeId())
                         .storeName(store.name())
                         .image(store.image())
+                        .category(store.category())
+                        .distance(store.distance())
                         .latitude(store.latitude())
                         .longitude(store.longitude())
                         .build())

@@ -26,6 +26,8 @@ public class RouteDetailResDTO {
             Long storeId,
             String storeName,
             String image,
+            String category,
+            String distance,
             float latitude,
             float longitude
     ) {
